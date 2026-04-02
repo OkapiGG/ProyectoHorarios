@@ -9,7 +9,11 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "carrera")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Carrera {
 
     @Id
