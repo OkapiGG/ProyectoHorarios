@@ -11,7 +11,10 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "bloque_tiempo")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class BloqueTiempo {
 
     @Id

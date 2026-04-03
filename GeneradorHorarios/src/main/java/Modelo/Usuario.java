@@ -25,7 +25,7 @@ public class Usuario {
     @Column(name = "id_usuario")
     private Long idUsuario;
     // Asi jpa entiende la relacion
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "id_profesor")
     private Profesor idProfesor;
 

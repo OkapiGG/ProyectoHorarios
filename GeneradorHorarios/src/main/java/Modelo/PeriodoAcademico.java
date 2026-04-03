@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "periodoAcademico")
@@ -15,6 +16,9 @@ public class PeriodoAcademico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_periodo_academico")
     private Long idPeriodoAcademico;
+
+    @OneToMany(mappedBy = "periodoAcademico")
+    private List<CargaAcademica> cargasAcademicas;
 
     @Column(nullable = false)
     private String descripcion;

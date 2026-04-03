@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "materia")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -16,6 +18,9 @@ public class Materia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_materia")
     private Long idMateria;
+
+    @OneToMany(mappedBy = "materia")
+    private List<PlanEstudioDetalle> planEstudioDetalles;
 
     @Column(name = "clave_materia", nullable = false, unique = true)
     private String claveMateria;
