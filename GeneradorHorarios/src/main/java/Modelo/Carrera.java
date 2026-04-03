@@ -1,16 +1,15 @@
 package Modelo;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "carrera")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -23,5 +22,8 @@ public class Carrera {
 
     @Column(name = "nombre_carrera", nullable = false, unique = true)
     private String nombreCarrera;
+
+    @OneToMany(mappedBy = "carrera")
+    private List<Grupo> grupos;
 
 }

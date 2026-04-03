@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "profesor")
 @Data
@@ -16,6 +18,9 @@ public class Profesor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_profesor")
     private Long idProfesor;
+
+    @OneToMany(mappedBy = "profesor")
+    private List<CargaAcademica> cargasAcademicas;
 
     @Column(name = "correo")
     private String correo;
@@ -40,4 +45,5 @@ public class Profesor {
 
     @Column(name = "max_grados_estudios")
     private String maximoGradosEstudios;
+
 }
