@@ -1,13 +1,31 @@
 import React, { useState } from "react";
 import { GraduationCap, Mail, Lock, LogIn, Search, Settings } from 'lucide-react';
+import axios from "axios";
 
 function Login() {
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
 
-    const clickBoton = (e) => {
+    const clickBoton = async (e) => {
         e.preventDefault();
-        console.log("Enviando a Spring: ", { correo, password });
+
+        try{
+            const respuesta = await axios.post("http://localhost:8080/api/login", {
+                correo: correo,
+                password: password
+            })
+
+            console.log("Respuesta del back: ", respuesta.data);
+            alert("Bienvenido " + respuesta.data.rol);
+        } catch(error){
+            console.error("Error al iniciar sesion ", error);
+            if(error.response && error.respuesta.status === 401){
+                alert("Correo o contraseña incorrecto");
+            } else{
+                alert("Error de conexion");
+            }
+        }
+        
     };
 
     return (
