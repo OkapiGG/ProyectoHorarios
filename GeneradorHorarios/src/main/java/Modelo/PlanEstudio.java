@@ -5,35 +5,33 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "planEstudio")
+@Table(name = "plan_estudio")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlanEstudio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_planEstudio")
+    @Column(name = "id_plan_estudio")
     private Long idPlanEstudio;
 
-    @ManyToOne
-    @JoinColumn(name = "id_carrera")
-    private Carrera Carrera;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_carrera", nullable = false)
+    private Carrera carrera;
 
-    @OneToMany(mappedBy = "planEstudio")
-    private List<PlanEstudioDetalle> planEstudioDetalles;
-
-    @Column(name = "descripcion")
+    @Column(nullable = false)
     private String descripcion;
 
     @Column(name = "vigencia_inicio")
-    private Integer vigenciainicio;
+    private LocalDate vigenciaInicio;
 
     @Column(name = "vigencia_fin")
-    private Integer vigenciaFin;
+    private LocalDate vigenciaFin;
 
-    @Column(name = "activo")
-    private Boolean activo;
+    @Column(nullable = false)
+    private Boolean activo = false;
 }

@@ -1,14 +1,11 @@
 package Modelo;
 
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
-@Table(name = "periodoAcademico")
+@Table(name = "periodo_academico")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class PeriodoAcademico {
 
@@ -16,9 +13,6 @@ public class PeriodoAcademico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_periodo_academico")
     private Long idPeriodoAcademico;
-
-    @OneToMany(mappedBy = "periodoAcademico")
-    private List<CargaAcademica> cargasAcademicas;
 
     @Column(nullable = false)
     private String descripcion;
@@ -34,5 +28,4 @@ public class PeriodoAcademico {
 
     @Column(nullable = false)
     private Boolean activo = false;
-
 }

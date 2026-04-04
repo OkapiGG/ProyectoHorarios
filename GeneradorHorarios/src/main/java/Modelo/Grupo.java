@@ -1,37 +1,33 @@
 package Modelo;
 
+import Modelo.enums.Turno;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "Grupo")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
+@Table(name = "grupo")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Grupo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_grupo")
-    private Integer idGrupo;
+    private Long idGrupo;
 
-    @ManyToOne
-    @JoinColumn(name = "id_carrera")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_carrera", nullable = false)
     private Carrera carrera;
 
-    @Column(name = "semestre")
-    private String semestre;
+    @Column(nullable = false)
+    private Integer semestre;
 
     @Column(name = "clave_grupo", nullable = false, unique = true)
     private String claveGrupo;
 
-    @Column(name = "cupo_maximo")
+    @Column(name = "cupo_maximo", nullable = false)
     private Integer cupoMaximo;
 
-    @Column(name = "turno")
-    private String turno;
-
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Turno turno;
 }

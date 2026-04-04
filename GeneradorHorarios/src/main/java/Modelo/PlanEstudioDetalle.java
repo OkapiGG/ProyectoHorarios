@@ -1,42 +1,32 @@
 package Modelo;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.*;
 
 @Entity
-@Table(name = "PlanEstudioDetalle")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
+@Table(name = "plan_estudio_detalle")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class PlanEstudioDetalle {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idPlanEstudioDetalle")
-    private Integer idPlanEstudioDetalle;
+    @Column(name = "id_plan_detalle")
+    private Long idPlanDetalle;
 
-    @OneToMany(mappedBy = "planEstudioDetalle")
-    private List<CargaAcademica> cargasAcademicas;
-
-    @ManyToOne
-    @JoinColumn(name = "idPlanEstudio")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_plan_estudio", nullable = false)
     private PlanEstudio planEstudio;
 
-   @ManyToOne
-    @JoinColumn(name = "id_materia")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_materia", nullable = false)
     private Materia materia;
 
-   @Column(name = "semestre")
-    private String semestre;
+    @Column(nullable = false)
+    private Integer semestre;
 
-   @Column(name = "horasTeoria")
+    @Column(name = "horas_teoria", nullable = false)
     private Integer horasTeoria;
 
-   @Column(name = "horasLaboratorio")
+    @Column(name = "horas_laboratorio", nullable = false)
     private Integer horasLaboratorio;
-
 }

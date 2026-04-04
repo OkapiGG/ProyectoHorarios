@@ -22,8 +22,4 @@ public class Carrera {
 
     @Column(name = "nombre_carrera", nullable = false, unique = true)
     private String nombreCarrera;
-
-    @OneToMany(mappedBy = "carrera")
-    private List<Grupo> grupos;
-
 }

@@ -1,41 +1,32 @@
 package Modelo;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
+import lombok.*;
 
 @Entity
-@Table(name = "CargaAcademica")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
-
+@Table(name = "carga_academica")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class CargaAcademica {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "idCargaAcademica")
-    private Integer idCargaAcademica;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_carga_academica")
+    private Long idCargaAcademica;
 
-    @ManyToOne
-    @JoinColumn(name = "idPlanDetalle")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_plan_detalle", nullable = false)
     private PlanEstudioDetalle planEstudioDetalle;
 
-    @ManyToOne
-    @JoinColumn(name = "idGrupo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_grupo", nullable = false)
     private Grupo grupo;
 
-    @ManyToOne
-    @JoinColumn(name = "id_profesor")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_profesor", nullable = false)
     private Profesor profesor;
 
-    @ManyToOne
-    @JoinColumn(name = "idPeriodoAcademico")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_periodo_academico", nullable = false)
     private PeriodoAcademico periodoAcademico;
-
-
 }
+
