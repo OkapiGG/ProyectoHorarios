@@ -19,9 +19,6 @@ public class Materia {
     @Column(name = "id_materia")
     private Long idMateria;
 
-    @OneToMany(mappedBy = "materia")
-    private List<PlanEstudioDetalle> planEstudioDetalles;
-
     @Column(name = "clave_materia", nullable = false, unique = true)
     private String claveMateria;
 

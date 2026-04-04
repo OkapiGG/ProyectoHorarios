@@ -1,20 +1,15 @@
 package Modelo;
 
 
+import Modelo.enums.Turno;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "bloque_tiempo")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class BloqueTiempo {
 
     @Id
@@ -31,8 +26,8 @@ public class BloqueTiempo {
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private Turno turno;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Turno turno;
 
 }

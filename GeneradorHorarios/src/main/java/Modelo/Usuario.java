@@ -7,39 +7,35 @@ package Modelo;
     onetoone algo asi para la relacion
  */
 
+import Modelo.enums.Rol;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "usuario")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
     private Long idUsuario;
-    // Asi jpa entiende la relacion
-    @OneToOne
-    @JoinColumn(name = "id_profesor")
-    private Profesor idProfesor;
 
-    @Column(name = "correo")
+    @Column(nullable = false, unique = true)
     private String correo;
 
-    @Column(name = "password_hash")
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "rol")
-    private String rol;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Rol rol;
 
-    @Column(name = "activo")
-    private Boolean activo;
+    @Column(nullable = false)
+    private Boolean activo = true;
 
-
+    // si es null el y no tiene profesor asociado es un coordinador
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_profesor", nullable = true)
+    private Profesor profesor;
 }
