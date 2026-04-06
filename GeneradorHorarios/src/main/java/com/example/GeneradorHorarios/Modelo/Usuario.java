@@ -1,4 +1,4 @@
-package Modelo;
+package com.example.GeneradorHorarios.Modelo;
 /*
     queda pendiente lo del rol por como se va a declarar
     o si se va a validar
@@ -7,7 +7,7 @@ package Modelo;
     onetoone algo asi para la relacion
  */
 
-import Modelo.enums.Rol;
+import com.example.GeneradorHorarios.Modelo.enums.Rol;
 import jakarta.persistence.*;
 import lombok.*;
 

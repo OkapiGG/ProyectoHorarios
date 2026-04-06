@@ -1,7 +1,7 @@
-package Modelo;
+package com.example.GeneradorHorarios.Modelo;
 
 
-import Modelo.enums.TipoBloque;
+import com.example.GeneradorHorarios.Modelo.enums.TipoBloque;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

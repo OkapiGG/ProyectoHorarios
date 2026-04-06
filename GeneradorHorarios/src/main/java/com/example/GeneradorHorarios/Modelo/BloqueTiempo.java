@@ -1,7 +1,7 @@
-package Modelo;
+package com.example.GeneradorHorarios.Modelo;
 
 
-import Modelo.enums.Turno;
+import com.example.GeneradorHorarios.Modelo.enums.Turno;
 import jakarta.persistence.*;
 import lombok.*;
 

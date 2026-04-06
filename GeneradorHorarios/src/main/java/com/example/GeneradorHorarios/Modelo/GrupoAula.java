@@ -1,4 +1,4 @@
-package Modelo;
+package com.example.GeneradorHorarios.Modelo;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
