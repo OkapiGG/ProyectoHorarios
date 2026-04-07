@@ -3,8 +3,8 @@ import { GraduationCap, Mail, Lock, LogIn, Search, Settings } from 'lucide-react
 import axios from "axios";
 
 function Login() {
-    const [correo, setCorreo] = useState('');
-    const [password, setPassword] = useState('');
+    const [correo, setCorreo] = useState('emanuel@unach.mx');
+    const [password, setPassword] = useState('Emanuel24.');
 
     const clickBoton = async (e) => {
         e.preventDefault();
@@ -19,7 +19,8 @@ function Login() {
             alert("Bienvenido " + respuesta.data.rol);
         } catch(error){
             console.error("Error al iniciar sesion ", error);
-            if(error.response && error.respuesta.status === 401){
+            // ✅ Fix Bug 1: era "error.respuesta" → corregido a "error.response"
+            if(error.response && error.response.status === 401){
                 alert("Correo o contraseña incorrecto");
             } else{
                 alert("Error de conexion");
@@ -67,21 +68,24 @@ function Login() {
                                 style={{ background: '#002451' }}>
                                 <GraduationCap size={22} className="text-white" />
                             </div>
-                            <h1 className="text-2xl font-black tracking-tighter" style={{ color: '#002451' }}>AE</h1>
+                            <h1 className="text-2xl font-black tracking-tighter" style={{ color: '#002451' }}>SIGHO</h1>
                         </div>
 
                         {/* Logo desktop */}
                         <div className="hidden md:block mb-5">
-                            <h1 className="text-xl font-black tracking-tighter mb-1" style={{ color: '#002451' }}>AE</h1>
+                            <h1 className="text-xl font-black tracking-tighter mb-1" style={{ color: '#002451' }}>SIGHO</h1>
+                            {/* ✅ Fix Bug 3: "Systema" → "Sistema" */}
                             <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#747780' }}>
-                                Systema de Horarios
+                                Sistema de Horarios
                             </p>
                         </div>
 
                         {/* Encabezado */}
                         <div className="mb-5">
-                            <h2 className="text-xl font-bold text-white-300 mb-2">Iniciar sesión</h2>
-                            <p className="text-sm text-black-500">
+                            {/* ✅ Fix Bug 2: "text-white-300" → "text-gray-800" */}
+                            <h2 className="text-xl font-bold text-gray-800 mb-2">Iniciar sesión</h2>
+                            {/* ✅ Fix Bug 2: "text-black-500" → "text-gray-500" */}
+                            <p className="text-sm text-gray-500">
                                 Ingrese sus credenciales para acceder al sistema institucional.
                             </p>
                         </div>
@@ -177,7 +181,7 @@ function Login() {
                     {/* Footer */}
                     <footer className="mt-6 text-center md:text-left">
                         <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: '#747780' }}>
-                            AE — Sistema Inteligente de Generación de Horarios
+                            SIGHO — Sistema Inteligente de Generación de Horarios
                         </p>
                     </footer>
                 </div>
