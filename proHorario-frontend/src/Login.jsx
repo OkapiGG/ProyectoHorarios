@@ -3,8 +3,8 @@ import { GraduationCap, Mail, Lock, LogIn, Search, Settings } from 'lucide-react
 import axios from "axios";
 
 function Login() {
-    const [correo, setCorreo] = useState('emanuel@unach.mx');
-    const [password, setPassword] = useState('Emanuel24.');
+    const [correo, setCorreo] = useState('');
+    const [password, setPassword] = useState('');
 
     const clickBoton = async (e) => {
         e.preventDefault();
@@ -19,7 +19,6 @@ function Login() {
             alert("Bienvenido " + respuesta.data.rol);
         } catch(error){
             console.error("Error al iniciar sesion ", error);
-            // ✅ Fix Bug 1: era "error.respuesta" → corregido a "error.response"
             if(error.response && error.response.status === 401){
                 alert("Correo o contraseña incorrecto");
             } else{
