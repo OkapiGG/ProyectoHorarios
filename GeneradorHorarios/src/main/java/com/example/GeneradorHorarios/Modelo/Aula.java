@@ -2,13 +2,11 @@ package com.example.GeneradorHorarios.Modelo;
 
 import com.example.GeneradorHorarios.Modelo.enums.TipoAula;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "aula")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Aula {
 
     @Id
