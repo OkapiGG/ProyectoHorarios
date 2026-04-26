@@ -1,4 +1,4 @@
-package com.example.GeneradorHorarios.Contoller;
+package com.example.GeneradorHorarios.Controlador;
 
 import com.example.GeneradorHorarios.Modelo.DTO.MateriaRequest;
 import com.example.GeneradorHorarios.Modelo.Materia;

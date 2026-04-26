@@ -1,15 +1,10 @@
-package com.example.GeneradorHorarios.Contoller;
+package com.example.GeneradorHorarios.Controlador;
 
-import com.example.GeneradorHorarios.Modelo.Aula;
 import com.example.GeneradorHorarios.Modelo.Carrera;
-import com.example.GeneradorHorarios.Modelo.DTO.AulaRequest;
 import com.example.GeneradorHorarios.Modelo.DTO.GrupoRequest;
-import com.example.GeneradorHorarios.Modelo.Edificio;
 import com.example.GeneradorHorarios.Modelo.Grupo;
-import com.example.GeneradorHorarios.Modelo.Repositorio.AulaRepositorio;
 import com.example.GeneradorHorarios.Modelo.Repositorio.CarreraRepositorio;
 import com.example.GeneradorHorarios.Modelo.Repositorio.GrupoRepositorio;
-import com.example.GeneradorHorarios.Modelo.enums.TipoAula;
 import com.example.GeneradorHorarios.Modelo.enums.Turno;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

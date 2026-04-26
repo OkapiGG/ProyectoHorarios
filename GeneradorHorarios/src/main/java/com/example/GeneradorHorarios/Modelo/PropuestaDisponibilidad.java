@@ -2,9 +2,7 @@ package com.example.GeneradorHorarios.Modelo;
 
 import com.example.GeneradorHorarios.Modelo.enums.EstadoPropuesta;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -14,7 +12,8 @@ import java.time.LocalDate;
                 columnNames = {"id_profesor","id_periodo_academico"}
         )
 )
-@Data @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class PropuestaDisponibilidad {
 
     @Id

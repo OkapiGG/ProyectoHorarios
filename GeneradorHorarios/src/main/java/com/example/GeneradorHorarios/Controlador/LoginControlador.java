@@ -1,4 +1,4 @@
-package com.example.GeneradorHorarios.Contoller;
+package com.example.GeneradorHorarios.Controlador;
 
 import com.example.GeneradorHorarios.Modelo.DTO.LoginRequest;
 import com.example.GeneradorHorarios.Modelo.Repositorio.UsuarioRepositorio;
@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -16,6 +17,12 @@ public class LoginControlador {
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
+
+    @GetMapping
+    public ResponseEntity<List<Usuario>> listarUsuarios(){
+        List<Usuario> lista = usuarioRepositorio.findAll();
+        return ResponseEntity.ok(lista);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request){
@@ -29,8 +36,6 @@ public class LoginControlador {
                 return ResponseEntity.ok(usuario);
             }
         }
-
         return ResponseEntity.status(401).body("Correo o cotraseña incorrectos");
-
     }
 }
