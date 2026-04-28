@@ -1,9 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sigho-blue: #1a3a6b;
-  --color-sigho-amber: #F59E0B;
-  --color-sigho-indigo: #4F46E5;
+  /* --- PALETA OFICIAL SIGHO --- */
+  --color-sigho-primary: #101828;
+  --color-sigho-matutino: #FFBF00;
+  --color-sigho-vespertino: #4B0082;
+  --color-sigho-bg: #F8F9FA;
+  --color-sigho-success: #1D9E75;
+  --color-sigho-error: #E24B4A;
+  
+  --color-sigho-sidebarActive: #E8EEF7; 
 }
 
 :root {

@@ -1,8 +1,12 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import TopBar from "./components/TopBar";
+
 import {
   LayoutDashboard, GraduationCap, Users, DoorOpen,
   Sparkles, CalendarDays, History, Bell, Settings,
-  Upload, AlertCircle, Zap, RefreshCw, Calendar, FileText
+  Upload, AlertCircle, Zap, RefreshCw, Calendar, FileText,
 } from "lucide-react";
 
 const scheduleData = {
@@ -46,61 +50,23 @@ const typeStyles = {
 };
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard" },
-  { icon: GraduationCap, label: "Profesores" },
-  { icon: Users, label: "Grupos" },
-  { icon: DoorOpen, label: "Aulas" },
-  { icon: Sparkles, label: "Generador" },
-  { icon: CalendarDays, label: "Mi Disponibilidad" },
-  { icon: History, label: "Historial" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+  { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
+  { icon: Users, label: "Grupos", path: "/grupos" },
+  { icon: DoorOpen, label: "Aulas", path: "/aulas" },
+  { icon: Sparkles, label: "Generador", path: "/generador" },
+  { icon: CalendarDays, label: "Mi Disponibilidad", path: "/disponibilidad" },
+  { icon: History, label: "Historial", path: "/historial" },
 ];
 
 function Gestion() {
-  const [activeNav, setActiveNav] = useState("Dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden font-sans">
 
-      {/* ── Sidebar ── */}
-      <aside className="w-56 bg-gray-900 flex flex-col flex-shrink-0">
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-700">
-          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-black text-sm">S</span>
-          </div>
-          <div>
-            <p className="text-white font-bold text-sm leading-tight">SIGHO</p>
-            <p className="text-gray-400 text-[10px] uppercase tracking-widest">University Systems</p>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {navItems.map(({ icon: Icon, label }) => (
-            <button
-              key={label}
-              onClick={() => setActiveNav(label)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
-                activeNav === label
-                  ? "bg-blue-600 text-white font-semibold"
-                  : "text-gray-400 hover:bg-gray-800 hover:text-white"
-              }`}
-            >
-              <Icon size={17} />
-              {label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Capacidad */}
-        <div className="mx-3 mb-4 bg-gray-800 rounded-xl p-4">
-          <p className="text-gray-400 text-[10px] uppercase tracking-wider mb-1">Capacidad Total</p>
-          <p className="text-white text-2xl font-bold mb-2">84%</p>
-          <div className="w-full bg-gray-700 rounded-full h-1.5">
-            <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: "84%" }} />
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* ── Main ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
