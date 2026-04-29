@@ -72,7 +72,7 @@ function Gestion() {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+        <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-6">
             <span className="font-bold text-gray-800 text-sm">SIGHO Schedule</span>
             <button className="text-blue-600 text-sm font-semibold border-b-2 border-blue-600 pb-0.5">
@@ -102,7 +102,7 @@ function Gestion() {
                 Bienvenido de nuevo, Coordinador. Aquí tienes el estado actual de la planificación académica para el próximo ciclo.
               </p>
             </div>
-            <div className="flex gap-2 flex-shrink-0 ml-6">
+            <div className="flex gap-2 shrink-0 ml-6">
               <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <Upload size={15} /> Exportar PDF
               </button>

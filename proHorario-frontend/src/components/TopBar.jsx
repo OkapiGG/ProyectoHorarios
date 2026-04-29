@@ -8,7 +8,7 @@ import {
 
 function TopBar() {
     return (
-        <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+        <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-6">
             <span className="font-bold text-gray-800 text-sm">SIGHO Schedule</span>
             <button className="text-blue-600 text-sm font-semibold border-b-2 border-blue-600 pb-0.5">
