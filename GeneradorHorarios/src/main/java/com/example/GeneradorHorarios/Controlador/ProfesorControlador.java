@@ -28,11 +28,12 @@ public class ProfesorControlador {
         Profesor nuevoProfesor = new Profesor();
         nuevoProfesor.setNomProfesor(request.getNomProfesor());
         nuevoProfesor.setApPaternoProfesor(request.getApPaternoProfesor());
-        nuevoProfesor.setApMaternoProfesor(request.getApPaternoMaterno());
+        nuevoProfesor.setApMaternoProfesor(request.getApMaternoProfesor());
         nuevoProfesor.setAreaConocimiento(request.getAreaConocimiento());
+        nuevoProfesor.setCorreo(request.getCorreo());
         nuevoProfesor.setTipoContrato(request.getTipoContrato());
         nuevoProfesor.setAniosAntiguedad(request.getAniosAntiguedad());
-        nuevoProfesor.setMaxGradoEstudios(request.getMaxAniosEstudios());
+        nuevoProfesor.setMaxGradoEstudios(request.getMaxGradoEstudios());
 
         Profesor profesorGuardado = profesorRepositorio.save(nuevoProfesor);
         return ResponseEntity.ok(profesorGuardado);

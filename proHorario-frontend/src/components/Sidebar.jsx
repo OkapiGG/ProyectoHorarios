@@ -35,7 +35,7 @@ function Sidebar() {
 
             {/* Menú Inteligente */}
             <nav className="px-4 space-y-1.5 mt-6">
-            {navItems.map(({ icon: Icon, label, path }) => {
+            {navItems.map(({ icon, label, path }) => {
                 const isActive = location.pathname === path;
 
                 return (
@@ -48,7 +48,7 @@ function Sidebar() {
                         : "text-blue-200 hover:bg-white/10 hover:text-white"
                     }`}
                 >
-                    <Icon size={18} /> {label}
+                    {React.createElement(icon, { size: 18 })} {label}
                 </button>
                 );
             })}

@@ -6,10 +6,10 @@ import lombok.Data;
 public class ProfesorRequest {
     private String nomProfesor;
     private String apPaternoProfesor;
-    private String apPaternoMaterno;
+    private String apMaternoProfesor;
     private String areaConocimiento;
     private String tipoContrato;
     private String correo;
     private Integer aniosAntiguedad;
-    private String maxAniosEstudios;
+    private String maxGradoEstudios;
 }

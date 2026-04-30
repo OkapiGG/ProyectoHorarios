@@ -1,11 +1,7 @@
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
-import TopBar from "./components/TopBar";
 
 import {
-  LayoutDashboard, GraduationCap, Users, DoorOpen,
-  Sparkles, CalendarDays, History, Bell, Settings,
+  DoorOpen, Bell, Settings,
   Upload, AlertCircle, Zap, RefreshCw, Calendar, FileText,
 } from "lucide-react";
 
@@ -49,20 +45,7 @@ const typeStyles = {
   taller: "bg-amber-100 text-amber-800 border border-amber-300",
 };
 
-const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-  { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
-  { icon: Users, label: "Grupos", path: "/grupos" },
-  { icon: DoorOpen, label: "Aulas", path: "/aulas" },
-  { icon: Sparkles, label: "Generador", path: "/generador" },
-  { icon: CalendarDays, label: "Mi Disponibilidad", path: "/disponibilidad" },
-  { icon: History, label: "Historial", path: "/historial" },
-];
-
 function Gestion() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden font-sans">
 
