@@ -1,13 +1,14 @@
-import React from "react";
+import React, { createElement } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
     LayoutDashboard, GraduationCap, Users, DoorOpen,
-    Sparkles, CalendarDays, History
+    Sparkles, CalendarDays, History, FilePen
 } from "lucide-react";
 
 const navItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
+    { icon: FilePen, label: "Materia", path: "/MateriaView"},
     { icon: Users, label: "Grupos", path: "/grupos" },
     { icon: DoorOpen, label: "Aulas", path: "/aulas" },
     { icon: Sparkles, label: "Generador", path: "/generador" },
@@ -42,13 +43,13 @@ function Sidebar() {
                 <button
                     key={label}
                     onClick={() => navigate(path)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-200 ${
+                className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-200 ${
                     isActive
                         ? "bg-white/20 text-white font-semibold shadow-sm" 
                         : "text-blue-200 hover:bg-white/10 hover:text-white"
                     }`}
                 >
-                    {React.createElement(icon, { size: 18 })} {label}
+                    {createElement(icon, { size: 18 })} {label}
                 </button>
                 );
             })}
