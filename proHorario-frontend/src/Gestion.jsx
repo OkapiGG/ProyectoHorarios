@@ -1,38 +1,9 @@
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
-import TopBar from "./components/TopBar";
 
 import {
-  LayoutDashboard, GraduationCap, Users, DoorOpen,
-  Sparkles, CalendarDays, History, Bell, Settings,
+  DoorOpen, Bell, Settings,
   Upload, AlertCircle, Zap, RefreshCw, Calendar, FileText,
 } from "lucide-react";
-
-const scheduleData = {
-  LUNES: [
-    { time: "07:00", code: "INF-101", name: "Programación Avanzada", type: "matutino" },
-    { time: "09:00", code: "MAT-205", name: "Cálculo Diferencial", type: "matutino" },
-    { time: "15:00", code: "ARQ-500", name: "Diseño Urbano", type: "vespertino" },
-  ],
-  MARTES: [
-    { time: "09:00", code: "HUM-110", name: "Ética y Sociedad", type: "matutino" },
-    { time: "11:00", code: "TALLER", name: "Libre Lab 1", type: "taller" },
-  ],
-  MIÉRCOLES: [
-    { time: "07:00", code: "INF-101", name: "Programación Avanzada", type: "matutino" },
-    { time: "09:00", code: "MAT-205", name: "Cálculo Diferencial", type: "matutino" },
-    { time: "13:00", code: "ARQ-500", name: "Diseño Urbano", type: "vespertino" },
-  ],
-  JUEVES: [
-    { time: "09:00", code: "HUM-110", name: "Ética y Sociedad", type: "matutino" },
-    { time: "13:00", code: "SEM-01", name: "Seminario Tesis", type: "vespertino" },
-  ],
-  VIERNES: [
-    { time: "07:00", code: "TUTORÍA", name: "Asesoría Académica", type: "taller" },
-    { time: "09:00", code: "MAT-205", name: "Cálculo Diferencial", type: "matutino" },
-  ],
-};
 
 const days = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES"];
 const timeSlots = [
@@ -43,26 +14,7 @@ const timeSlots = [
   { label: "03:00 PM", key: "15:00" },
 ];
 
-const typeStyles = {
-  matutino: "bg-yellow-400 text-yellow-900",
-  vespertino: "bg-purple-600 text-white",
-  taller: "bg-amber-100 text-amber-800 border border-amber-300",
-};
-
-const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-  { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
-  { icon: Users, label: "Grupos", path: "/grupos" },
-  { icon: DoorOpen, label: "Aulas", path: "/aulas" },
-  { icon: Sparkles, label: "Generador", path: "/generador" },
-  { icon: CalendarDays, label: "Mi Disponibilidad", path: "/disponibilidad" },
-  { icon: History, label: "Historial", path: "/historial" },
-];
-
 function Gestion() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden font-sans">
 
@@ -103,9 +55,6 @@ function Gestion() {
               </p>
             </div>
             <div className="flex gap-2 shrink-0 ml-6">
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-                <Upload size={15} /> Exportar PDF
-              </button>
               <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <AlertCircle size={15} className="text-orange-500" /> Ver Conflictos
               </button>
@@ -161,61 +110,64 @@ function Gestion() {
           </div>
 
           {/* Schedule Preview */}
-          <div className="bg-white rounded-2xl shadow-sm p-5">
-            <div className="flex items-center justify-between mb-4">
+          <div className="rounded-[2rem] border border-slate-100 bg-slate-50/80 p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Vista Previa del Horario</h2>
-                <p className="text-xs text-gray-400">Esquema preliminar basado en propuestas actuales</p>
+                <h2 className="text-[20px] font-extrabold text-[#12356b]">Vista Previa del Horario</h2>
+                <p className="text-sm text-slate-500">Esquema preliminar basado en propuestas actuales</p>
               </div>
-              <div className="flex items-center gap-4 text-xs font-semibold">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block" /> Matutino
+              <div className="flex items-center gap-3 text-xs font-semibold">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#f7e4a3] px-4 py-2 text-[#8d6500]">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#ffbe0b] inline-block" /> Matutino
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block" /> Vespertino
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#e7d5ff] px-4 py-2 text-[#9b5de5]">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#7b2cbf] inline-block" /> Vespertino
                 </span>
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr>
-                    <th className="w-20 pb-3" />
-                    {days.map((d) => (
-                      <th key={d} className="pb-3 text-center text-gray-700 font-bold tracking-wider">{d}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {timeSlots.map((slot) => (
-                    <tr key={slot.key} className="border-t border-gray-100">
-                      <td className="py-2 pr-3 text-gray-400 font-medium align-top pt-3 whitespace-nowrap">{slot.label}</td>
-                      {days.map((day) => {
-                        const item = scheduleData[day]?.find((e) => e.time === slot.key);
-                        return (
-                          <td key={day} className="py-1.5 px-1 align-top">
-                            {item ? (
-                              <div className={`${typeStyles[item.type]} rounded-xl px-3 py-2.5 min-h-14`}>
-                                <p className="font-bold leading-tight">{item.code}</p>
-                                <p className="leading-tight mt-0.5">{item.name}</p>
-                              </div>
-                            ) : (
-                              <div className="min-h-14" />
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
+              <div className="min-w-[1080px] px-1 pb-2">
+                <div className="grid grid-cols-[120px_repeat(5,minmax(150px,1fr))] items-center gap-x-4 pb-4">
+                  <div />
+                  {days.map((day) => (
+                    <div
+                      key={day}
+                      className="rounded-md bg-slate-100 py-3 text-center text-[14px] font-extrabold text-[#12356b]"
+                    >
+                      {day}
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+
+                <div className="grid grid-cols-[120px_repeat(5,minmax(150px,1fr))] gap-x-4">
+                  {timeSlots.map((slot, slotIndex) => (
+                    <div key={slot.key} className="contents">
+                      <div
+                        className={`flex items-start text-[14px] font-semibold text-slate-400 ${
+                          slotIndex === 0 ? "pt-4" : "pt-8"
+                        }`}
+                      >
+                        {slot.label}
+                      </div>
+                      {days.map((day) => (
+                        <div
+                          key={`${day}-${slot.key}`}
+                          className={`h-18 rounded-xl border border-transparent ${
+                            slotIndex === timeSlots.length - 1 ? "mb-0" : "mb-3"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-center mt-4 pt-3 border-t border-gray-100">
-              <button className="text-sm text-gray-400 hover:text-blue-600 flex items-center gap-1.5 transition-colors">
-                ⇅ Expandir Vista Completa
-              </button>
+            <div className="mt-4 flex justify-center pt-3">
+              <span className="text-sm font-semibold text-[#12356b]">
+                ↕ Expandir Vista Completa
+              </span>
             </div>
           </div>
 

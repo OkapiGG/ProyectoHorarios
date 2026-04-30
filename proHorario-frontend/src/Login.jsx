@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GraduationCap, Mail, Lock, LogIn, Search, Settings } from 'lucide-react';
 import axios from "axios";
 
-function Login() {
+function Login({ onLoginSuccess }) {
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
 
@@ -17,6 +17,7 @@ function Login() {
 
             console.log("Respuesta del back: ", respuesta.data);
             alert("Bienvenido " + respuesta.data.rol);
+            onLoginSuccess();
         } catch(error){
             console.error("Error al iniciar sesion ", error);
             if(error.response && error.response.status === 401){
@@ -67,7 +68,7 @@ function Login() {
                                 style={{ background: '#002451' }}>
                                 <GraduationCap size={22} className="text-white" />
                             </div>
-                            <h1 className="text-2xl font-black tracking-tighter" style={{ color: '#002451' }}>SIGHO</h1>
+                            <h1 className="text-2xl font-black tracking-tighter" style={{ color: '#002451' }}>AE</h1>
                         </div>
 
                         {/* Logo desktop */}
@@ -82,7 +83,7 @@ function Login() {
                         {/* Encabezado */}
                         <div className="mb-5">
                             {/* ✅ Fix Bug 2: "text-white-300" → "text-gray-800" */}
-                            <h2 className="text-xl font-bold text-gray-800 mb-2">Iniciar sesión</h2>
+                            <h2 className="text-xl font-black text-black-800 mb-2">Iniciar sesión</h2>
                             {/* ✅ Fix Bug 2: "text-black-500" → "text-gray-500" */}
                             <p className="text-sm text-gray-500">
                                 Ingrese sus credenciales para acceder al sistema institucional.
