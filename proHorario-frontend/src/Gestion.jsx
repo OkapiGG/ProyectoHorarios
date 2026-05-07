@@ -14,11 +14,6 @@ const timeSlots = [
   { label: "03:00 PM", key: "15:00" },
 ];
 
-const typeStyles = {
-  matutino: "bg-yellow-400 text-yellow-900",
-  vespertino: "bg-purple-600 text-white",
-  taller: "bg-amber-100 text-amber-800 border border-amber-300",
-};
 function Gestion() {
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden font-sans">

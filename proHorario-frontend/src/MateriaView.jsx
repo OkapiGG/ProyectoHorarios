@@ -1,5 +1,6 @@
 import React from "react";
 import Sidebar from "./components/Sidebar";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   BookOpen,
@@ -52,6 +53,8 @@ const materias = [
 ];
 
 function MateriaView() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen overflow-hidden bg-sigho-bg font-sans">
       <Sidebar />
@@ -271,7 +274,10 @@ function MateriaView() {
           </div>
         </div>
 
-        <button className="absolute bottom-6 right-6 z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-sigho-primary text-white shadow-xl transition-transform hover:scale-105 lg:bottom-8 lg:right-8">
+        <button
+          onClick={() => navigate("/MateriaCatalogoView")}
+          className="absolute bottom-6 right-6 z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-sigho-primary text-white shadow-xl transition-transform hover:scale-105 lg:bottom-8 lg:right-8"
+        >
           <Plus size={28} />
         </button>
       </main>

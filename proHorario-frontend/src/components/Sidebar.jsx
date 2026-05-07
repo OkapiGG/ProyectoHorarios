@@ -2,11 +2,12 @@ import React, { createElement } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
     LayoutDashboard, GraduationCap, Users, DoorOpen,
-    Sparkles, CalendarDays, History, FilePen
+    Sparkles, CalendarDays, History, FilePen, LayoutGrid
 } from "lucide-react";
 
 const navItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+    { icon: LayoutGrid, label: "Catálogos", path: "/CatalogosView" },
     { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
     { icon: FilePen, label: "Materia", path: "/MateriaView"},
     { icon: Users, label: "Grupos", path: "/grupos" },
