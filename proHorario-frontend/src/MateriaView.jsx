@@ -108,7 +108,7 @@ function MateriaView() {
                 />
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap xl:flex-nowrap">
-                <div className="flex min-w-37.5 flex-col gap-1">
+                <div className="flex min-w-[150px] flex-col gap-1">
                   <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                     Carrera
                   </span>
@@ -117,7 +117,7 @@ function MateriaView() {
                     <option>Contaduria</option>
                   </select>
                 </div>
-                <div className="flex min-w-37.5 flex-col gap-1">
+                <div className="flex min-w-[150px] flex-col gap-1">
                   <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                     Estatus
                   </span>
@@ -189,7 +189,7 @@ function MateriaView() {
               </div>
 
               <div className="overflow-x-auto px-2 py-2 sm:px-3">
-                <table className="w-full min-w-230 border-collapse text-left">
+                <table className="w-full min-w-[920px] border-collapse text-left">
                   <thead>
                     <tr className="border-b border-gray-100 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       <th className="px-4 py-4 sm:px-6">Materia</th>
