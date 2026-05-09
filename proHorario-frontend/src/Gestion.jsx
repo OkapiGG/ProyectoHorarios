@@ -14,11 +14,6 @@ const timeSlots = [
   { label: "03:00 PM", key: "15:00" },
 ];
 
-const typeStyles = {
-  matutino: "bg-yellow-400 text-yellow-900",
-  vespertino: "bg-purple-600 text-white",
-  taller: "bg-amber-100 text-amber-800 border border-amber-300",
-};
 function Gestion() {
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden font-sans">
@@ -115,7 +110,7 @@ function Gestion() {
           </div>
 
           {/* Schedule Preview */}
-          <div className="rounded-[2rem] border border-slate-100 bg-slate-50/80 p-6 shadow-sm">
+          <div className="rounded-4xl border border-slate-100 bg-slate-50/80 p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="text-[20px] font-extrabold text-[#12356b]">Vista Previa del Horario</h2>
@@ -132,7 +127,7 @@ function Gestion() {
             </div>
 
             <div className="overflow-x-auto">
-              <div className="min-w-[1080px] px-1 pb-2">
+              <div className="min-w-270 px-1 pb-2">
                 <div className="grid grid-cols-[120px_repeat(5,minmax(150px,1fr))] items-center gap-x-4 pb-4">
                   <div />
                   {days.map((day) => (

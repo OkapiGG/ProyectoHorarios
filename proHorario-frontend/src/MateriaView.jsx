@@ -1,5 +1,6 @@
 import React from "react";
 import Sidebar from "./components/Sidebar";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   BookOpen,
@@ -52,6 +53,8 @@ const materias = [
 ];
 
 function MateriaView() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen overflow-hidden bg-sigho-bg font-sans">
       <Sidebar />
@@ -62,7 +65,7 @@ function MateriaView() {
             <header className="flex flex-col gap-4 rounded-3xl bg-white px-5 py-5 shadow-sm ring-1 ring-gray-100 lg:flex-row lg:items-center lg:justify-between lg:px-6">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="m-0 text-2xl font-bold text-white-900">
+                  <h1 className="m-0 text-2xl font-bold text-gray-900">
                     Gestión de Materias
                   </h1>
                   <span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-600">
@@ -105,7 +108,7 @@ function MateriaView() {
                 />
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap xl:flex-nowrap">
-                <div className="flex min-w-[150px] flex-col gap-1">
+                <div className="flex min-w-37.5 flex-col gap-1">
                   <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                     Carrera
                   </span>
@@ -114,7 +117,7 @@ function MateriaView() {
                     <option>Contaduria</option>
                   </select>
                 </div>
-                <div className="flex min-w-[150px] flex-col gap-1">
+                <div className="flex min-w-37.5 flex-col gap-1">
                   <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                     Estatus
                   </span>
@@ -186,7 +189,7 @@ function MateriaView() {
               </div>
 
               <div className="overflow-x-auto px-2 py-2 sm:px-3">
-                <table className="w-full min-w-[920px] border-collapse text-left">
+                <table className="w-full min-w-230 border-collapse text-left">
                   <thead>
                     <tr className="border-b border-gray-100 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       <th className="px-4 py-4 sm:px-6">Materia</th>
@@ -271,7 +274,11 @@ function MateriaView() {
           </div>
         </div>
 
-        <button className="absolute bottom-6 right-6 z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-sigho-primary text-white shadow-xl transition-transform hover:scale-105 lg:bottom-8 lg:right-8">
+        <button
+          type="button"
+          onClick={() => navigate("/MateriaCatalogoView")}
+          className="absolute bottom-6 right-6 z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-sigho-primary text-white shadow-xl transition-transform hover:scale-105 lg:bottom-8 lg:right-8"
+        >
           <Plus size={28} />
         </button>
       </main>

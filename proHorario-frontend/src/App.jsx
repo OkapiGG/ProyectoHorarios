@@ -3,6 +3,7 @@ import { useState } from "react";
 import Gestion from "./Gestion";
 import Login from "./Login";
 import MateriaView from "./MateriaView";
+import MateriaCatalogoView from "./MateriaCatalogoView";
 import ProfesorView from "./ProfesorView";
 import ProfesorCatalogoView from "./ProfesorCatalogoView";
 
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Gestion />} />
           <Route path="/ProfesorView" element={<ProfesorView />} />
           <Route path="/MateriaView" element={<MateriaView />} />
+          <Route path="/MateriaCatalogoView" element={<MateriaCatalogoView />} />
           <Route path="/ProfesorCatalogoView" element={<ProfesorCatalogoView />} />
         </Routes>
       ) : (
