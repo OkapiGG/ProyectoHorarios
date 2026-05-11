@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { GraduationCap, Mail, Lock, LogIn, Search, Settings } from 'lucide-react';
 import axios from "axios";
+import { useAuth } from "./auth/AuthContext";
 
-function Login({ onLoginSuccess }) {
+function Login() {
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login } = useAuth();
 
     const clickBoton = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
         try{
             const respuesta = await axios.post("http://localhost:8080/api/login", {
@@ -16,8 +20,8 @@ function Login({ onLoginSuccess }) {
             })
 
             console.log("Respuesta del back: ", respuesta.data);
-            alert("Bienvenido " + respuesta.data.rol);
-            onLoginSuccess();
+            login(respuesta.data, correo);
+            alert("Bienvenido " + (respuesta.data.rol ?? "usuario"));
         } catch(error){
             console.error("Error al iniciar sesion ", error);
             if(error.response && error.response.status === 401){
@@ -25,6 +29,8 @@ function Login({ onLoginSuccess }) {
             } else{
                 alert("Error de conexion");
             }
+        } finally {
+            setIsSubmitting(false);
         }
         
     };
@@ -142,10 +148,11 @@ function Login({ onLoginSuccess }) {
 
                             <button
                                 type="submit"
-                                className="w-full text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 mt-2 transition-all hover:opacity-90 active:scale-[0.99] shadow-sm"
+                                disabled={isSubmitting}
+                                className="w-full text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 mt-2 transition-all hover:opacity-90 active:scale-[0.99] shadow-sm disabled:cursor-not-allowed disabled:opacity-70"
                                 style={{ background: '#002451' }}
                             >
-                                <span>Ingresar</span>
+                                <span>{isSubmitting ? "Validando..." : "Ingresar"}</span>
                                 <LogIn size={20} />
                             </button>
                         </form>

@@ -1,17 +1,19 @@
 import React, { createElement } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { LogOut, UserRound } from "lucide-react";
 import {
     LayoutDashboard, GraduationCap, Users, DoorOpen,
     Sparkles, CalendarDays, History, FilePen, LayoutGrid
 } from "lucide-react";
+import { useAuth } from "../auth/AuthContext";
 
 const navItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: LayoutGrid, label: "Catálogos", path: "/CatalogosView" },
-    { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
-    { icon: FilePen, label: "Materia", path: "/MateriaView"},
-    { icon: Users, label: "Grupos", path: "/grupos" },
-    { icon: DoorOpen, label: "Aulas", path: "/aulas" },
+    // { icon: GraduationCap, label: "Profesores", path: "/ProfesorCatalogoView" },
+    // { icon: FilePen, label: "Materia", path: "/MateriaCatalogoView"},
+    // { icon: Users, label: "Grupos", path: "/grupos" },
+    // { icon: DoorOpen, label: "Aulas", path: "/aulas" },
     { icon: Sparkles, label: "Generador", path: "/generador" },
     { icon: CalendarDays, label: "Mi Disponibilidad", path: "/disponibilidad" },
     { icon: History, label: "Historial", path: "/historial" },
@@ -20,6 +22,7 @@ const navItems = [
 function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, logout } = useAuth();
 
     return (
     <aside className="w-64 bg-sigho-primary flex flex-col justify-between shrink-0 shadow-2xl relative z-10">
@@ -55,6 +58,33 @@ function Sidebar() {
                 );
             })}
             </nav>
+        </div>
+
+        <div className="border-t border-white/10 p-4">
+            <div className="rounded-2xl bg-white/10 px-4 py-3 text-white">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+                        <UserRound size={18} />
+                    </div>
+                    <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">
+                            {user?.nombre ?? "Usuario"}
+                        </p>
+                        <p className="truncate text-[10px] uppercase tracking-wider text-blue-200">
+                            {user?.rol ?? "Sin rol"}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="button"
+                onClick={logout}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-sigho-primary transition-colors hover:bg-blue-50"
+            >
+                <LogOut size={16} />
+                Cerrar sesión
+            </button>
         </div>
 
     </aside>

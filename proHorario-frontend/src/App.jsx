@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 
+import { useAuth } from "./auth/AuthContext";
 import Gestion from "./Gestion";
 import Login from "./Login";
 import MateriaView from "./MateriaView";
@@ -15,13 +15,19 @@ import GrupoCatalogoView from "./GrupoCatalogoView";
 import PlanEstudioCatalogoView from "./PlanEstudioCatalogoView";
 import PlanEstudioDetalleCatalogoView from "./PlanEstudioDetalleCatalogoView";
 import PeriodoAcademicoCatalogoView from "./PeriodoAcademicoCatalogoView";
+import CargaAcademicaCatalogoView from "./CargaAcademicaCatalogoView";
+import ComponenteCargaCatalogoView from "./ComponenteCargaCatalogoView";
+import BloqueTiempoCatalogoView from "./BloqueTiempoCatalogoView";
+import PropuestaDisponibilidadCatalogoView from "./PropuestaDisponibilidadCatalogoView";
+import DetalleHorarioCatalogoView from "./DetalleHorarioCatalogoView";
+import SesionClaseCatalogoView from "./SesionClaseCatalogoView";
 
 function App() {
-  const [sesionIniciada, setSesionIniciada] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   return (
     <BrowserRouter>
-      {sesionIniciada ? (
+      {isAuthenticated ? (
         <Routes>
           <Route path="/" element={<Gestion />} />
           <Route path="/CatalogosView" element={<CatalogosView />} />
@@ -38,10 +44,17 @@ function App() {
           <Route path="/PlanEstudioCatalogoView" element={<PlanEstudioCatalogoView />} />
           <Route path="/PlanEstudioDetalleCatalogoView" element={<PlanEstudioDetalleCatalogoView />} />
           <Route path="/PeriodoAcademicoCatalogoView" element={<PeriodoAcademicoCatalogoView />} />
+          <Route path="/CargaAcademicaCatalogoView" element={<CargaAcademicaCatalogoView />} />
+          <Route path="/ComponenteCargaCatalogoView" element={<ComponenteCargaCatalogoView />} />
+          <Route path="/BloqueTiempoCatalogoView" element={<BloqueTiempoCatalogoView />} />
+          <Route path="/PropuestaDisponibilidadCatalogoView" element={<PropuestaDisponibilidadCatalogoView />} />
+          <Route path="/DetalleHorarioCatalogoView" element={<DetalleHorarioCatalogoView />} />
+          <Route path="/SesionClaseCatalogoView" element={<SesionClaseCatalogoView />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
 
         </Routes>
       ) : (
-        <Login onLoginSuccess={() => setSesionIniciada(true)} />
+        <Login />
       )}
     </BrowserRouter>
   );

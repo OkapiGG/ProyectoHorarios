@@ -5,57 +5,49 @@ import {
   ArrowRight,
   BookOpen,
   Building2,
+  CalendarDays,
   GraduationCap,
   LayoutGrid,
   Users,
   DoorOpen,
   Layers3,
   CalendarRange,
+  Clock3,
   Search,
   Sparkles,
 } from "lucide-react";
 
 const catalogos = [
   {
-    key: "profesores",
-    title: "Profesores",
-    description:
-      "Alta, consulta y mantenimiento del personal académico con su perfil y carga base.",
-    icon: GraduationCap,
-    route: "/ProfesorCatalogoView",
-    accent: "from-blue-600 to-sky-500",
-    chips: ["CRUD", "Docentes", "API"],
-  },
-  {
     key: "materias",
     title: "Materias",
     description:
       "Administración de asignaturas, créditos, semestre y estatus curricular.",
     icon: BookOpen,
-    route: "/MateriaView",
+    route: "/MateriaCatalogoView",
     accent: "from-amber-500 to-orange-400",
     chips: ["Plan", "Créditos", "Semestre"],
   },
-  {
-    key: "edificios",
-    title: "Edificios",
-    description:
-      "Catálogo base para relacionar infraestructura física con aulas y espacios.",
-    icon: Building2,
-    route: "/EdificioCatalogoView",
-    accent: "from-emerald-600 to-teal-500",
-    chips: ["Infraestructura", "Aulas", "Base"],
-  },
-  {
-    key: "aulas",
-    title: "Aulas",
-    description:
-      "Control de salones, capacidad, edificio asociado y disponibilidad general.",
-    icon: DoorOpen,
-    route: "/aulas",
-    accent: "from-violet-600 to-fuchsia-500",
-    chips: ["Próximamente", "Capacidad", "Espacios"],
-  },
+  // {
+  //   key: "edificios",
+  //   title: "Edificios",
+  //   description:
+  //     "Catálogo base para relacionar infraestructura física con aulas y espacios.",
+  //   icon: Building2,
+  //   route: "/EdificioCatalogoView",
+  //   accent: "from-emerald-600 to-teal-500",
+  //   chips: ["Infraestructura", "Aulas", "Base"],
+  // },
+  // {
+  //   key: "aulas",
+  //   title: q "Aulas",
+  //   description:
+  //     "Control de salones, capacidad, edificio asociado y disponibilidad general.",
+  //   icon: DoorOpen,
+  //   route: "/aulas",
+  //   accent: "from-violet-600 to-fuchsia-500",
+  //   chips: ["Próximamente", "Capacidad", "Espacios"],
+  // },
   {
     key: "grupos",
     title: "Grupos",
@@ -66,16 +58,16 @@ const catalogos = [
     accent: "from-cyan-600 to-blue-500",
     chips: ["Próximamente", "Asignación", "Horario"],
   },
-  {
-    key: "planDetalle",
-    title: "Plan Estudio Detalle",
-    description:
-      "Relación entre planes de estudio, materias, semestre y horas por materia.",
-    icon: LayoutGrid,
-    route: "/PlanEstudioDetalleCatalogoView",
-    accent: "from-slate-700 to-slate-500",
-    chips: ["Core", "Plan", "Materias"],
-  },
+  // {
+  //   key: "planDetalle",
+  //   title: "Plan Estudio Detalle",
+  //   description:
+  //     "Relación entre planes de estudio, materias, semestre y horas por materia.",
+  //   icon: LayoutGrid,
+  //   route: "/PlanEstudioDetalleCatalogoView",
+  //   accent: "from-slate-700 to-slate-500",
+  //   chips: ["Core", "Plan", "Materias"],
+  // },
   {
     key: "planEstudio",
     title: "Plan de Estudio",
@@ -106,11 +98,81 @@ const catalogos = [
     accent: "from-rose-600 to-pink-500",
     chips: ["Periodos", "Plan", "Mapa"],
   },
+  {
+    key: "profesores",
+    title: "Profesores",
+    description:
+      "Alta, consulta y mantenimiento del personal académico con su perfil y carga base.",
+    icon: GraduationCap,
+    route: "/ProfesorCatalogoView",
+    accent: "from-blue-600 to-sky-500",
+    chips: ["CRUD", "Docentes", "API"],
+  },
+  {
+    key: "cargaAcademica",
+    title: "Carga Académica",
+    description:
+      "Relación entre plan, grupo, profesor y periodo para preparar la asignación de horarios.",
+    icon: CalendarRange,
+    route: "/CargaAcademicaCatalogoView",
+    accent: "from-sky-700 to-cyan-500",
+    chips: ["Core", "Horario", "Relaciones"],
+  },
+  {
+    key: "componenteCarga",
+    title: "Componente de Carga",
+    description:
+      "Divide la carga académica en sesiones, bloques y reglas de consecutividad.",
+    icon: LayoutGrid,
+    route: "/ComponenteCargaCatalogoView",
+    accent: "from-emerald-600 to-teal-500",
+    chips: ["Carga", "Sesiones", "Reglas"],
+  },
+  {
+    key: "bloqueTiempo",
+    title: "Bloques de Tiempo",
+    description:
+      "Catálogo de días, horarios y turnos base para la programación de clases.",
+    icon: Clock3,
+    route: "/BloqueTiempoCatalogoView",
+    accent: "from-slate-700 to-slate-500",
+    chips: ["Horario", "Turno", "Base"],
+  },
+  {
+    key: "propuestaDisponibilidad",
+    title: "Propuestas de Disponibilidad",
+    description:
+      "Disponibilidad docente por periodo con fecha de entrega y estatus.",
+    icon: CalendarDays,
+    route: "/PropuestaDisponibilidadCatalogoView",
+    accent: "from-indigo-600 to-cyan-500",
+    chips: ["Docente", "Periodo", "Estado"],
+  },
+  {
+    key: "detalleHorario",
+    title: "Detalle de Horario",
+    description:
+      "Relaciona propuestas de disponibilidad con bloques de tiempo y tipo de bloque.",
+    icon: Building2,
+    route: "/DetalleHorarioCatalogoView",
+    accent: "from-stone-700 to-zinc-500",
+    chips: ["Bloques", "Propuesta", "Tipo"],
+  },
+  {
+    key: "sesionClase",
+    title: "Sesiones de Clase",
+    description:
+      "Programa cada sesión con componente de carga, bloque de tiempo y aula.",
+    icon: DoorOpen,
+    route: "/SesionClaseCatalogoView",
+    accent: "from-violet-600 to-fuchsia-500",
+    chips: ["Aula", "Sesión", "Programación"],
+  },
 ];
 
 function CatalogosView() {
   const navigate = useNavigate();
-  const [activeCatalogKey, setActiveCatalogKey] = useState("profesores");
+  const [activeCatalogKey, setActiveCatalogKey] = useState("materias");
 
   const activeCatalog = useMemo(
     () => catalogos.find((catalogo) => catalogo.key === activeCatalogKey) ?? catalogos[0],
@@ -134,15 +196,16 @@ function CatalogosView() {
                       <Sparkles size={22} />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
+                      <p className="text-[12px] font-bold uppercase tracking-[0.28em] text-black">
                         Centro de administración
                       </p>
-                      <h1 className="mt-1 text-2xl font-bold text-gray-900">
+                      <h1 className="text-[32px] font-bold !text-black ">
                         Catálogos
                       </h1>
+
                     </div>
                   </div>
-                  <p className="mt-4 max-w-2xl text-sm text-gray-500">
+                  <p className="mt-4 max-w-2xl text-sm text-black">
                     Elige un catálogo desde una sola vista. La idea es reducir clics y
                     mantener un punto de entrada único para profesores, materias,
                     edificios y el resto de catálogos.
@@ -154,7 +217,7 @@ function CatalogosView() {
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                       Activos
                     </p>
-                    <p className="mt-1 text-xl font-extrabold text-gray-900">3</p>
+                    <p className="mt-1 text-xl font-extrabold text-gray-900">{catalogos.length}</p>
                   </div>
                   <div className="rounded-2xl bg-gray-50 px-4 py-3 text-center ring-1 ring-gray-100">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
@@ -176,10 +239,10 @@ function CatalogosView() {
               <div className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm ring-1 ring-gray-100 sm:p-6">
                 <div className="mb-5 flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-black">
                       Selector
                     </p>
-                    <h2 className="mt-1 text-lg font-bold text-gray-900">
+                    <h2 className="mt-1 text-lg font-bold !text-gray-900">
                       Elige un catálogo
                     </h2>
                   </div>
@@ -201,11 +264,10 @@ function CatalogosView() {
                         key={catalogo.key}
                         type="button"
                         onClick={() => setActiveCatalogKey(catalogo.key)}
-                        className={`group rounded-3xl border p-5 text-left transition-all ${
-                          isActive
+                        className={`group rounded-3xl border p-5 text-left transition-all ${isActive
                             ? "border-gray-900 bg-gray-900 text-white shadow-xl shadow-gray-200"
                             : "border-gray-100 bg-gray-50/80 text-gray-900 hover:-translate-y-0.5 hover:border-gray-200 hover:bg-white hover:shadow-md"
-                        }`}
+                          }`}
                       >
                         <div
                           className={`mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${catalogo.accent} text-white shadow-lg`}
@@ -215,9 +277,8 @@ function CatalogosView() {
 
                         <h3 className="text-base font-bold">{catalogo.title}</h3>
                         <p
-                          className={`mt-2 text-sm leading-relaxed ${
-                            isActive ? "text-gray-300" : "text-gray-500"
-                          }`}
+                          className={`mt-2 text-sm leading-relaxed ${isActive ? "text-gray-300" : "text-gray-500"
+                            }`}
                         >
                           {catalogo.description}
                         </p>
@@ -226,11 +287,10 @@ function CatalogosView() {
                           {catalogo.chips.map((chip) => (
                             <span
                               key={chip}
-                              className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                                isActive
+                              className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${isActive
                                   ? "bg-white/10 text-white"
                                   : "bg-white text-gray-500 ring-1 ring-gray-100"
-                              }`}
+                                }`}
                             >
                               {chip}
                             </span>
