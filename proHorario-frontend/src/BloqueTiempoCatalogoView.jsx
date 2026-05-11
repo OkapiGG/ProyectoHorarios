@@ -3,11 +3,25 @@ import { Clock3, Edit2, Info, Lock, Trash2 } from "lucide-react";
 import { createCatalogCrudPage } from "./components/Catalogo";
 import { crearBloqueTiempo, obtenerBloquesTiempo } from "./service/BloqueTiempoService";
 
-const tabs = ["Bloques de Tiempo"];
-const diasSemana = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES"];
+const diasSemana = [
+  "LUNES",
+  "MARTES",
+  "MIERCOLES",
+  "JUEVES",
+  "VIERNES",
+  "SABADO",
+  "DOMINGO",
+];
+
 const turnos = ["MATUTINO", "VESPERTINO"];
 
-const formatearHora = (hora) => String(hora ?? "").slice(0, 5);
+const formatearHora = (hora) => {
+  if (!hora) {
+    return "--:--";
+  }
+
+  return String(hora).slice(0, 5);
+};
 
 const formatearTexto = (valor) =>
   String(valor ?? "")
@@ -22,7 +36,7 @@ const BloqueTiempoCatalogoView = createCatalogCrudPage({
   entityNameSingular: "bloque de tiempo",
   entityNamePlural: "bloques de tiempo",
   headerKicker: "Configuracion de Datos Maestros",
-  tabs,
+  tabs: ["Bloques de Tiempo"],
   defaultTab: "Bloques de Tiempo",
   searchPlaceholder: "Filtrar por dia, turno u horario...",
   newRecordMessage: "Formulario limpio, listo para un nuevo bloque de tiempo.",
@@ -192,9 +206,7 @@ const BloqueTiempoCatalogoView = createCatalogCrudPage({
             <span className="text-sm font-semibold text-gray-800">
               {formatearTexto(bloque.diaSemana)}
             </span>
-            <p className="text-[10px] text-gray-400">
-              Cuadricula semanal
-            </p>
+            <p className="text-[10px] text-gray-400">Cuadricula semanal</p>
           </div>
         </div>
       </td>

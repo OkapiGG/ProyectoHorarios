@@ -163,9 +163,7 @@ const MateriaCatalogoView = createCatalogCrudPage({
           <span className="text-sm font-semibold text-gray-800">
             {materia.nombreMateria}
           </span>
-          <p className="text-[10px] text-gray-400">
-            {materia.claveMateria}
-          </p>
+          <p className="text-[10px] text-gray-400">{materia.claveMateria}</p>
         </div>
       </td>
       <td className="py-4">

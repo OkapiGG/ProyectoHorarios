@@ -121,7 +121,7 @@ function Gestion() {
           </div>
 
           {/* Schedule Preview */}
-          <div className="rounded-[2rem] border border-slate-100 bg-slate-50/80 p-6 shadow-sm">
+          <div className="rounded-4xl border border-slate-100 bg-slate-50/80 p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="text-[20px] font-extrabold text-[#12356b]">Vista Previa del Horario</h2>
@@ -138,7 +138,7 @@ function Gestion() {
             </div>
 
             <div className="overflow-x-auto">
-              <div className="min-w-[1080px] px-1 pb-2">
+              <div className="min-w-270 px-1 pb-2">
                 <div className="grid grid-cols-[120px_repeat(5,minmax(150px,1fr))] items-center gap-x-4 pb-4">
                   <div />
                   {days.map((day) => (

@@ -1,8 +1,13 @@
 import axios from "axios";
+import { createCatalogService } from "./CrearService";
 
 const BASE_URL = "http://localhost:8080/api/propuestas";
+const propuestaDisponibilidadService = createCatalogService(BASE_URL);
 
-export const obtenerPropuestaPorProfesorYPeriodo = async (idProfesor, idPeriodoAcademico) => {
+export const obtenerPropuestaPorProfesorYPeriodo = async (
+  idProfesor,
+  idPeriodoAcademico
+) => {
   const response = await axios.get(
     `${BASE_URL}/profesor/${idProfesor}/periodo/${idPeriodoAcademico}`
   );
@@ -15,9 +20,15 @@ export const crearPropuestaDisponibilidad = async (payload) => {
   return response.data;
 };
 
-export const resolverPropuestaDisponibilidad = async (idProfesor, idPeriodoAcademico) => {
+export const resolverPropuestaDisponibilidad = async (
+  idProfesor,
+  idPeriodoAcademico
+) => {
   try {
-    return await obtenerPropuestaPorProfesorYPeriodo(idProfesor, idPeriodoAcademico);
+    return await obtenerPropuestaPorProfesorYPeriodo(
+      idProfesor,
+      idPeriodoAcademico
+    );
   } catch (error) {
     if (error.response?.status === 404) {
       return crearPropuestaDisponibilidad({
@@ -65,3 +76,5 @@ export const rechazarPropuesta = async (idPropuesta) => {
   const response = await axios.put(`${BASE_URL}/${idPropuesta}/rechazar`);
   return response.data;
 };
+
+export const obtenerPropuestaDisponibilidad = propuestaDisponibilidadService.list;

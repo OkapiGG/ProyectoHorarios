@@ -148,6 +148,7 @@ function createCatalogCrudPage(config) {
     const resolvedConfig =
       typeof config === "function" ? config() : config;
     const { entityNamePlural, loadItems: loadItemsFn } = resolvedConfig;
+    const titleClassName = resolvedConfig.titleClassName ?? "text-gray-900";
     const [items, setItems] = useState([]);
     const [formData, setFormData] = useState(resolvedConfig.initialFormState);
     const [isSaving, setIsSaving] = useState(false);
@@ -263,7 +264,7 @@ function createCatalogCrudPage(config) {
                   <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
                     {resolvedConfig.headerKicker ?? "Configuración de Datos Maestros"}
                   </p>
-                  <h1 className="mt-2 text-2xl font-bold text-gray-900">
+                  <h1 className={`mt-2 text-2xl font-bold ${titleClassName}`}>
                     {resolvedConfig.title}
                   </h1>
                   <p className="mt-1 text-sm text-gray-500">{resolvedConfig.description}</p>
@@ -321,7 +322,7 @@ function createCatalogCrudPage(config) {
                         "Formulario limpio, listo para un nuevo registro.",
                     });
                   }}
-                  className="flex items-center gap-2 rounded-xl bg-sigho-sidebar px-6 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-gray-800"
+                  className="flex items-center gap-2 rounded-xl bg-sigho-sidebar px-6 py-3 text-sm font-bold text-black shadow-md transition-colors hover:bg-green-400"
                 >
                   <Plus size={18} />
                   {resolvedConfig.newRecordLabel ?? "NUEVO REGISTRO"}
@@ -427,7 +428,7 @@ function createCatalogCrudPage(config) {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-bold text-gray-600 transition-colors hover:bg-gray-50"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50/30 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-red-200"
                   >
                     <XCircle size={16} />
                     {resolvedConfig.resetLabel ?? "LIMPIAR"}

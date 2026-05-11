@@ -5,16 +5,17 @@ import {
   ArrowRight,
   BookOpen,
   Building2,
-  GraduationCap,
-  LayoutGrid,
-  Users,
-  DoorOpen,
-  Layers3,
+  CalendarDays,
   CalendarRange,
   Clock3,
+  DoorOpen,
+  GraduationCap,
+  Layers3,
+  LayoutGrid,
   Search,
   Sparkles,
   Star,
+  Users,
 } from "lucide-react";
 
 const catalogos = [
@@ -56,7 +57,7 @@ const catalogos = [
     icon: DoorOpen,
     route: "/aulas",
     accent: "from-violet-600 to-fuchsia-500",
-    chips: ["Próximamente", "Capacidad", "Espacios"],
+    chips: ["Capacidad", "Espacios", "Core"],
   },
   {
     key: "grupos",
@@ -66,7 +67,7 @@ const catalogos = [
     icon: Users,
     route: "/GrupoCatalogoView",
     accent: "from-cyan-600 to-blue-500",
-    chips: ["Próximamente", "Asignación", "Horario"],
+    chips: ["Asignación", "Horario", "Core"],
   },
   {
     key: "planDetalle",
@@ -81,8 +82,7 @@ const catalogos = [
   {
     key: "planEstudio",
     title: "Plan de Estudio",
-    description:
-      "Definición del plan académico por carrera, vigencia y estatus.",
+    description: "Definición del plan académico por carrera, vigencia y estatus.",
     icon: CalendarRange,
     route: "/PlanEstudioCatalogoView",
     accent: "from-cyan-700 to-sky-500",
@@ -96,27 +96,76 @@ const catalogos = [
     icon: Layers3,
     route: "/CarreraCatalogoView",
     accent: "from-rose-600 to-pink-500",
-    chips: ["Próximamente", "Plan", "Mapa"],
+    chips: ["Plan", "Mapa", "Oferta"],
   },
   {
     key: "periodoAcademicos",
-    title: "Periodos Acádemicos",
-    description:
-      "Catálogo de periodos académicos.",
-    icon: Layers3,
+    title: "Periodos Académicos",
+    description: "Catálogo de periodos académicos.",
+    icon: CalendarDays,
     route: "/PeriodoAcademicoCatalogoView",
     accent: "from-rose-600 to-pink-500",
-    chips: ["Periodos", "Plan", "Mapa"],
+    chips: ["Periodos", "Fechas", "Activo"],
+  },
+  {
+    key: "cargaAcademica",
+    title: "Carga Académica",
+    description:
+      "Relación entre plan, grupo, profesor y periodo para preparar la asignación de horarios.",
+    icon: CalendarRange,
+    route: "/CargaAcademicaCatalogoView",
+    accent: "from-sky-700 to-cyan-500",
+    chips: ["Core", "Horario", "Relaciones"],
+  },
+  {
+    key: "componenteCarga",
+    title: "Componentes de Carga",
+    description:
+      "Divide la carga académica en sesiones, bloques y reglas de consecutividad.",
+    icon: LayoutGrid,
+    route: "/ComponenteCargaCatalogoView",
+    accent: "from-emerald-600 to-teal-500",
+    chips: ["Carga", "Sesiones", "Reglas"],
   },
   {
     key: "bloquesTiempo",
     title: "Bloques de Tiempo",
     description:
-      "Definicion de dias, horas y turnos que usa la disponibilidad docente.",
+      "Definición de días, horas y turnos que usa la disponibilidad docente.",
     icon: Clock3,
     route: "/BloqueTiempoCatalogoView",
     accent: "from-indigo-600 to-blue-500",
     chips: ["Horario", "Disponibilidad", "Base"],
+  },
+  {
+    key: "propuestaDisponibilidad",
+    title: "Propuestas de Disponibilidad",
+    description:
+      "Disponibilidad docente por periodo con fecha de entrega y estatus.",
+    icon: CalendarDays,
+    route: "/PropuestaDisponibilidadCatalogoView",
+    accent: "from-indigo-600 to-cyan-500",
+    chips: ["Docente", "Periodo", "Estado"],
+  },
+  {
+    key: "detalleHorario",
+    title: "Detalle de Horario",
+    description:
+      "Relaciona propuestas de disponibilidad con bloques de tiempo y tipo de bloque.",
+    icon: Building2,
+    route: "/DetalleHorarioCatalogoView",
+    accent: "from-stone-700 to-zinc-500",
+    chips: ["Bloques", "Propuesta", "Tipo"],
+  },
+  {
+    key: "sesionClase",
+    title: "Sesiones de Clase",
+    description:
+      "Programa cada sesión con componente de carga, bloque de tiempo y aula.",
+    icon: DoorOpen,
+    route: "/SesionClaseCatalogoView",
+    accent: "from-violet-600 to-fuchsia-500",
+    chips: ["Aula", "Sesión", "Programación"],
   },
   {
     key: "preferenciasMateria",
@@ -159,9 +208,7 @@ function CatalogosView() {
                       <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
                         Centro de administración
                       </p>
-                      <h1 className="mt-1 text-2xl font-bold text-gray-900">
-                        Catálogos
-                      </h1>
+                      <h1 className="mt-1 text-2xl font-bold text-gray-900">Catálogos</h1>
                     </div>
                   </div>
                   <p className="mt-4 max-w-2xl text-sm text-gray-500">
@@ -176,7 +223,9 @@ function CatalogosView() {
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                       Activos
                     </p>
-                    <p className="mt-1 text-xl font-extrabold text-gray-900">3</p>
+                    <p className="mt-1 text-xl font-extrabold text-gray-900">
+                      {catalogos.length}
+                    </p>
                   </div>
                   <div className="rounded-2xl bg-gray-50 px-4 py-3 text-center ring-1 ring-gray-100">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
@@ -207,9 +256,7 @@ function CatalogosView() {
                   </div>
                   <div className="flex items-center rounded-xl bg-gray-50 px-3 py-2 ring-1 ring-gray-100">
                     <Search size={16} className="mr-2 text-gray-400" />
-                    <span className="text-sm text-gray-500">
-                      Vista centralizada
-                    </span>
+                    <span className="text-sm text-gray-500">Vista centralizada</span>
                   </div>
                 </div>
 
@@ -271,9 +318,7 @@ function CatalogosView() {
                       <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/70">
                         Catálogo activo
                       </p>
-                      <h2 className="mt-2 text-2xl font-bold">
-                        {activeCatalog.title}
-                      </h2>
+                      <h2 className="mt-2 text-2xl font-bold">{activeCatalog.title}</h2>
                       <p className="mt-3 max-w-md text-sm leading-relaxed text-white/80">
                         {activeCatalog.description}
                       </p>
@@ -289,90 +334,41 @@ function CatalogosView() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-2xl bg-gray-50 px-4 py-4 ring-1 ring-gray-100">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                        Flujo
+                        Navegación
                       </p>
-                      <p className="mt-1 text-sm font-bold text-gray-900">
-                        Selección rápida
+                      <p className="mt-1 text-lg font-extrabold text-gray-900">
+                        Unificada
                       </p>
                     </div>
                     <div className="rounded-2xl bg-gray-50 px-4 py-4 ring-1 ring-gray-100">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                        Estado
+                        Tipo
                       </p>
-                      <p className="mt-1 text-sm font-bold text-gray-900">
-                        {activeCatalog.route ? "Disponible" : "Pendiente"}
-                      </p>
+                      <p className="mt-1 text-lg font-extrabold text-gray-900">Catálogo</p>
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5">
+                  <div className="rounded-3xl border border-gray-100 bg-gray-50/70 p-5">
                     <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                      Siguiente acción
+                      Resumen
                     </p>
-                    <p className="mt-2 text-sm text-gray-600">
-                      {activeCatalog.route
-                        ? "Puedes abrir el catálogo completo desde aquí sin pasar por una pantalla intermedia."
-                        : "Este catálogo todavía no tiene pantalla dedicada. Por ahora solo lo mostramos como referencia visual."}
+                    <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                      Usa esta vista como puerta de entrada a los datos maestros y a los
+                      módulos de soporte del generador. Aquí ya quedan reunidos los
+                      catálogos base, la disponibilidad y la afinidad materia-profesor.
                     </p>
                   </div>
 
-                  <div className="mt-auto flex gap-3">
-                    {activeCatalog.route ? (
-                      <button
-                        type="button"
-                        onClick={() => navigate(activeCatalog.route)}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-sigho-primary px-4 py-3 text-sm font-bold text-white shadow-md transition-opacity hover:opacity-90"
-                      >
-                        Abrir catálogo
-                        <ArrowRight size={16} />
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gray-200 px-4 py-3 text-sm font-bold text-gray-500"
-                      >
-                        Sin ruta disponible
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => navigate("/")}
-                      className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50"
-                    >
-                      Dashboard
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigate(activeCatalog.route)}
+                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-sigho-primary px-5 py-4 text-sm font-bold text-white shadow-lg transition-all hover:opacity-90"
+                  >
+                    Abrir catálogo
+                    <ArrowRight size={17} />
+                  </button>
                 </div>
               </aside>
-            </section>
-
-            <section className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                  Objetivo
-                </p>
-                <p className="mt-2 text-sm text-gray-600">
-                  Reducir navegación entre pantallas y tener una entrada única para todos los catálogos.
-                </p>
-              </div>
-              <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                  Diseño
-                </p>
-                <p className="mt-2 text-sm text-gray-600">
-                  Selector visual a la izquierda y detalle contextual a la derecha.
-                </p>
-              </div>
-              <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                  Evolución
-                </p>
-                <p className="mt-2 text-sm text-gray-600">
-                  Si te gusta, este hub puede convertirse en el flujo principal.
-                </p>
-              </div>
             </section>
           </div>
         </div>

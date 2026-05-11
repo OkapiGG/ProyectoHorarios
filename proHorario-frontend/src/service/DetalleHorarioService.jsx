@@ -1,6 +1,8 @@
 import axios from "axios";
+import { createCatalogService } from "./CrearService";
 
 const BASE_URL = "http://localhost:8080/api/detalle_horario";
+const detalleHorario = createCatalogService(BASE_URL);
 
 export const obtenerDetalleHorarioPorPropuesta = async (idProDisponibilidad) => {
   const response = await axios.get(`${BASE_URL}/propuesta/${idProDisponibilidad}`);
@@ -20,3 +22,5 @@ export const actualizarDetalleHorario = async (idDetalleHorario, payload) => {
 export const eliminarDetalleHorario = async (idDetalleHorario) => {
   await axios.delete(`${BASE_URL}/${idDetalleHorario}`);
 };
+
+export const obtenerDetalleHorario = detalleHorario.list;
