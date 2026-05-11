@@ -5,6 +5,7 @@ import axios from "axios";
 function Login({ onLoginSuccess }) {
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
+    const [rolSeleccionado, setRolSeleccionado] = useState('PROFESOR');
 
     const clickBoton = async (e) => {
         e.preventDefault();
@@ -16,8 +17,14 @@ function Login({ onLoginSuccess }) {
             })
 
             console.log("Respuesta del back: ", respuesta.data);
+            if (respuesta.data.rol !== rolSeleccionado) {
+                alert(
+                    `Tu usuario está registrado como ${respuesta.data.rol}, pero seleccionaste ${rolSeleccionado}.`
+                );
+                return;
+            }
             alert("Bienvenido " + respuesta.data.rol);
-            onLoginSuccess();
+            onLoginSuccess(respuesta.data);
         } catch(error){
             console.error("Error al iniciar sesion ", error);
             if(error.response && error.response.status === 401){
@@ -152,27 +159,64 @@ function Login({ onLoginSuccess }) {
 
                         {/* Roles */}
                         <div className="mt-6 pt-6" style={{ borderTop: '1px solid rgba(196,198,208,0.3)' }}>
-                            <div className="flex items-center justify-around">
-                                <div className="flex items-center gap-3 cursor-default group">
-                                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center transition-colors group-hover:bg-blue-50"
-                                        style={{ color: '#002451' }}>
-                                        <Search size={22} />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-bold text-gray-900">Docentes</p>
-                                        <p className="text-[10px] font-medium uppercase" style={{ color: '#747780' }}>Disponibilidad</p>
-                                    </div>
-                                </div>
-                                <div className="h-8 w-px" style={{ background: 'rgba(196,198,208,0.3)' }} />
-                                <div className="flex items-center gap-3 cursor-default group">
-                                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center transition-colors group-hover:bg-blue-50"
-                                        style={{ color: '#002451' }}>
-                                        <Settings size={22} />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-bold text-gray-900">Coordinación</p>
-                                        <p className="text-[10px] font-medium uppercase" style={{ color: '#747780' }}>Gestión</p>
-                                    </div>
+                            <div className="flex flex-col gap-3">
+                                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#43474f' }}>
+                                    Ingresar como
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setRolSeleccionado('PROFESOR')}
+                                        className="flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all"
+                                        style={{
+                                            borderColor: rolSeleccionado === 'PROFESOR' ? '#002451' : 'rgba(196,198,208,0.9)',
+                                            background: rolSeleccionado === 'PROFESOR' ? '#eef4ff' : '#fff',
+                                            boxShadow: rolSeleccionado === 'PROFESOR' ? '0 8px 20px rgba(0,36,81,0.12)' : 'none'
+                                        }}
+                                    >
+                                        <div
+                                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                                            style={{
+                                                background: rolSeleccionado === 'PROFESOR' ? '#002451' : '#f8fafc',
+                                                color: rolSeleccionado === 'PROFESOR' ? '#fff' : '#002451'
+                                            }}
+                                        >
+                                            <Search size={22} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Docentes</p>
+                                            <p className="text-[10px] font-medium uppercase" style={{ color: '#747780' }}>
+                                                Disponibilidad
+                                            </p>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setRolSeleccionado('COORDINADOR')}
+                                        className="flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all"
+                                        style={{
+                                            borderColor: rolSeleccionado === 'COORDINADOR' ? '#002451' : 'rgba(196,198,208,0.9)',
+                                            background: rolSeleccionado === 'COORDINADOR' ? '#eef4ff' : '#fff',
+                                            boxShadow: rolSeleccionado === 'COORDINADOR' ? '0 8px 20px rgba(0,36,81,0.12)' : 'none'
+                                        }}
+                                    >
+                                        <div
+                                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                                            style={{
+                                                background: rolSeleccionado === 'COORDINADOR' ? '#002451' : '#f8fafc',
+                                                color: rolSeleccionado === 'COORDINADOR' ? '#fff' : '#002451'
+                                            }}
+                                        >
+                                            <Settings size={22} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Coordinación</p>
+                                            <p className="text-[10px] font-medium uppercase" style={{ color: '#747780' }}>
+                                                Gestión
+                                            </p>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/periodos_academicos")
@@ -22,6 +23,17 @@ public class PeriodoAcademicoControlador {
     public ResponseEntity<List<PeriodoAcademico>> listarPeriodosAcademicos(){
         List<PeriodoAcademico> lista = periodoAcademicoRepositorio.findAll();
         return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/activo")
+    public ResponseEntity<?> obtenerPeriodoAcademicoActivo() {
+        Optional<PeriodoAcademico> periodoActivoOpt = periodoAcademicoRepositorio.findFirstByActivoTrue();
+
+        if (!periodoActivoOpt.isPresent()) {
+            return ResponseEntity.status(404).body("No existe un periodo academico activo");
+        }
+
+        return ResponseEntity.ok(periodoActivoOpt.get());
     }
 
     @PostMapping

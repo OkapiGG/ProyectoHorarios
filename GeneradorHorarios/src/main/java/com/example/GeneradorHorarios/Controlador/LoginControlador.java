@@ -1,5 +1,6 @@
 package com.example.GeneradorHorarios.Controlador;
 
+import com.example.GeneradorHorarios.Modelo.DTO.LoginResponse;
 import com.example.GeneradorHorarios.Modelo.DTO.LoginRequest;
 import com.example.GeneradorHorarios.Modelo.Repositorio.UsuarioRepositorio;
 import com.example.GeneradorHorarios.Modelo.Usuario;
@@ -32,8 +33,30 @@ public class LoginControlador {
         if(usuarioOpt.isPresent()){
             Usuario usuario = usuarioOpt.get();
             if(usuario.getPasswordHash().equals(request.getPassword())){
-                usuario.setPasswordHash("");
-                return ResponseEntity.ok(usuario);
+                Long idProfesor = usuario.getProfesor() != null ? usuario.getProfesor().getIdProfesor() : null;
+                String nombreProfesor = null;
+                String areaConocimiento = null;
+
+                if(usuario.getProfesor() != null){
+                    nombreProfesor = String.join(" ",
+                            usuario.getProfesor().getNomProfesor() != null ? usuario.getProfesor().getNomProfesor() : "",
+                            usuario.getProfesor().getApPaternoProfesor() != null ? usuario.getProfesor().getApPaternoProfesor() : "",
+                            usuario.getProfesor().getApMaternoProfesor() != null ? usuario.getProfesor().getApMaternoProfesor() : ""
+                    ).trim().replaceAll("\\s+", " ");
+                    areaConocimiento = usuario.getProfesor().getAreaConocimiento();
+                }
+
+                LoginResponse response = new LoginResponse(
+                        usuario.getIdUsuario(),
+                        usuario.getCorreo(),
+                        usuario.getRol(),
+                        usuario.getActivo(),
+                        idProfesor,
+                        nombreProfesor,
+                        areaConocimiento
+                );
+
+                return ResponseEntity.ok(response);
             }
         }
         return ResponseEntity.status(401).body("Correo o cotraseña incorrectos");

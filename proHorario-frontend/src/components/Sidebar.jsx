@@ -2,24 +2,62 @@ import React, { createElement } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
     LayoutDashboard, GraduationCap, Users, DoorOpen,
-    Sparkles, CalendarDays, History, FilePen, LayoutGrid
+    Sparkles, CalendarDays, History, FilePen, LayoutGrid, LogOut, ClipboardCheck, Star
 } from "lucide-react";
 
-const navItems = [
+const coordinatorNavItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: LayoutGrid, label: "Catálogos", path: "/CatalogosView" },
     { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
     { icon: FilePen, label: "Materia", path: "/MateriaView"},
     { icon: Users, label: "Grupos", path: "/grupos" },
     { icon: DoorOpen, label: "Aulas", path: "/aulas" },
+    { icon: ClipboardCheck, label: "Propuestas", path: "/propuestas" },
+    { icon: Star, label: "Preferencias", path: "/preferencias-materia" },
     { icon: Sparkles, label: "Generador", path: "/generador" },
+];
+
+const profesorNavItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: CalendarDays, label: "Mi Disponibilidad", path: "/disponibilidad" },
     { icon: History, label: "Historial", path: "/historial" },
 ];
 
-function Sidebar() {
+function Sidebar({ variant = "coordinador" }) {
     const navigate = useNavigate();
     const location = useLocation();
+    const usuarioActual = (() => {
+        try {
+            const usuarioGuardado = localStorage.getItem("usuarioActual");
+            return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+        } catch {
+            return null;
+        }
+    })();
+    const navItems = variant === "profesor" ? profesorNavItems : coordinatorNavItems;
+    const nombreProfesor = usuarioActual?.nombreProfesor || "Profesor";
+    const inicialesProfesor = nombreProfesor
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((parte) => parte.charAt(0).toUpperCase())
+        .join("") || "PR";
+    const footerProfile = variant === "profesor"
+        ? {
+            initials: inicialesProfesor,
+            name: nombreProfesor,
+            subtitle: usuarioActual?.areaConocimiento || usuarioActual?.correo || "Profesor",
+        }
+        : {
+            initials: "CO",
+            name: "Administrador",
+            subtitle: "Panel Administrativo",
+        };
+    
+    const handleLogout = () => {
+        localStorage.removeItem("usuarioActual");
+        window.location.href = "/";
+    };
 
     return (
     <aside className="w-64 bg-sigho-primary flex flex-col justify-between shrink-0 shadow-2xl relative z-10">
@@ -55,6 +93,28 @@ function Sidebar() {
                 );
             })}
             </nav>
+        </div>
+
+        <div className="px-4 pb-6">
+            <div className="mb-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-blue-50">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-sm font-extrabold text-sigho-primary">
+                        {footerProfile.initials}
+                    </div>
+                    <div className="min-w-0">
+                        <p className="truncate text-sm font-bold text-white">{footerProfile.name}</p>
+                        <p className="truncate text-xs text-blue-200">{footerProfile.subtitle}</p>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-200 text-blue-100 hover:bg-red-500/15 hover:text-white border border-white/10"
+            >
+                <LogOut size={18} />
+                Cerrar sesión
+            </button>
         </div>
 
     </aside>

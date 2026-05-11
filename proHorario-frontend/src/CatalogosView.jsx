@@ -11,8 +11,10 @@ import {
   DoorOpen,
   Layers3,
   CalendarRange,
+  Clock3,
   Search,
   Sparkles,
+  Star,
 } from "lucide-react";
 
 const catalogos = [
@@ -105,6 +107,26 @@ const catalogos = [
     route: "/PeriodoAcademicoCatalogoView",
     accent: "from-rose-600 to-pink-500",
     chips: ["Periodos", "Plan", "Mapa"],
+  },
+  {
+    key: "bloquesTiempo",
+    title: "Bloques de Tiempo",
+    description:
+      "Definicion de dias, horas y turnos que usa la disponibilidad docente.",
+    icon: Clock3,
+    route: "/BloqueTiempoCatalogoView",
+    accent: "from-indigo-600 to-blue-500",
+    chips: ["Horario", "Disponibilidad", "Base"],
+  },
+  {
+    key: "preferenciasMateria",
+    title: "Preferencias de Materias",
+    description:
+      "Afinidad entre profesores y materias para mejorar la asignación automática.",
+    icon: Star,
+    route: "/PreferenciaMateriaProfesorView",
+    accent: "from-emerald-600 to-lime-500",
+    chips: ["Profesores", "Materias", "Generador"],
   },
 ];
 

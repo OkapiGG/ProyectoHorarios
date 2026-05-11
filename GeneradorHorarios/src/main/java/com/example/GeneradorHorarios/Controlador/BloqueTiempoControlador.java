@@ -1,6 +1,7 @@
 package com.example.GeneradorHorarios.Controlador;
 
 import com.example.GeneradorHorarios.Modelo.BloqueTiempo;
+import com.example.GeneradorHorarios.Modelo.DTO.BloqueTiempoResponse;
 import com.example.GeneradorHorarios.Modelo.DTO.BloqueTiempoRequest;
 import com.example.GeneradorHorarios.Modelo.Repositorio.BloqueTiempoRepositorio;
 import com.example.GeneradorHorarios.Modelo.enums.Turno;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/bloque_tiempo")
@@ -19,13 +21,16 @@ public class BloqueTiempoControlador {
     private BloqueTiempoRepositorio bloqueTiempoRepositorio;
 
     @GetMapping
-    public ResponseEntity<List<BloqueTiempo>> listarBloqueTiempo(){
+    public ResponseEntity<List<BloqueTiempoResponse>> listarBloqueTiempo(){
         List<BloqueTiempo> lista = bloqueTiempoRepositorio.findAll();
-        return ResponseEntity.ok(lista);
+        List<BloqueTiempoResponse> response = lista.stream()
+                .map(BloqueTiempoResponse::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<BloqueTiempo> crearBloqueTiempo(@RequestBody BloqueTiempoRequest request){
+    public ResponseEntity<BloqueTiempoResponse> crearBloqueTiempo(@RequestBody BloqueTiempoRequest request){
 
         BloqueTiempo nuevoBloqueTiempo = new BloqueTiempo();
 
@@ -35,7 +40,7 @@ public class BloqueTiempoControlador {
         nuevoBloqueTiempo.setTurno(Turno.valueOf(request.getTurno()));
 
         BloqueTiempo bloqueTiempoGuardado = bloqueTiempoRepositorio.save(nuevoBloqueTiempo);
-        return ResponseEntity.ok(bloqueTiempoGuardado);
+        return ResponseEntity.ok(BloqueTiempoResponse.fromEntity(bloqueTiempoGuardado));
     }
 
 }

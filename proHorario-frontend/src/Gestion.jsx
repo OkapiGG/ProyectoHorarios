@@ -1,8 +1,9 @@
 import Sidebar from "./components/Sidebar";
+import { useNavigate } from "react-router-dom";
 
 import {
   DoorOpen, Bell, Settings,
-  Upload, AlertCircle, Zap, RefreshCw, Calendar, FileText,
+  AlertCircle, Zap, RefreshCw, Calendar, FileText, ClipboardCheck,
 } from "lucide-react";
 
 const days = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES"];
@@ -15,6 +16,8 @@ const timeSlots = [
 ];
 
 function Gestion() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden font-sans">
 
@@ -87,6 +90,14 @@ function Gestion() {
               <div className="w-full bg-gray-100 rounded-full h-1.5 mt-2">
                 <div className="bg-yellow-400 h-1.5 rounded-full" style={{ width: "75%" }} />
               </div>
+              <button
+                type="button"
+                onClick={() => navigate("/propuestas")}
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-yellow-50 px-3 py-2 text-xs font-extrabold text-yellow-700 transition-colors hover:bg-yellow-100"
+              >
+                <ClipboardCheck size={14} />
+                Revisar enviadas
+              </button>
             </div>
 
             {/* Grupos sin aula */}
