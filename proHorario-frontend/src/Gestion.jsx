@@ -1,8 +1,9 @@
 import Sidebar from "./components/Sidebar";
+import { useNavigate } from "react-router-dom";
 
 import {
   DoorOpen, Bell, Settings,
-  Upload, AlertCircle, Zap, RefreshCw, Calendar, FileText,
+  AlertCircle, Zap, RefreshCw, Calendar, FileText, ClipboardCheck,
 } from "lucide-react";
 
 const days = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES"];
@@ -14,12 +15,9 @@ const timeSlots = [
   { label: "03:00 PM", key: "15:00" },
 ];
 
-const typeStyles = {
-  matutino: "bg-yellow-400 text-yellow-900",
-  vespertino: "bg-purple-600 text-white",
-  taller: "bg-amber-100 text-amber-800 border border-amber-300",
-};
 function Gestion() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden font-sans">
 
@@ -63,7 +61,11 @@ function Gestion() {
               <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <AlertCircle size={15} className="text-orange-500" /> Ver Conflictos
               </button>
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-700 rounded-xl text-sm font-bold text-white hover:bg-blue-800 transition-colors shadow-md shadow-blue-200">
+              <button
+                type="button"
+                onClick={() => navigate("/generador")}
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-700 rounded-xl text-sm font-bold text-white hover:bg-blue-800 transition-colors shadow-md shadow-blue-200"
+              >
                 <Zap size={15} /> Generar Horario
               </button>
             </div>
@@ -92,6 +94,14 @@ function Gestion() {
               <div className="w-full bg-gray-100 rounded-full h-1.5 mt-2">
                 <div className="bg-yellow-400 h-1.5 rounded-full" style={{ width: "75%" }} />
               </div>
+              <button
+                type="button"
+                onClick={() => navigate("/propuestas")}
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-yellow-50 px-3 py-2 text-xs font-extrabold text-yellow-700 transition-colors hover:bg-yellow-100"
+              >
+                <ClipboardCheck size={14} />
+                Revisar enviadas
+              </button>
             </div>
 
             {/* Grupos sin aula */}
@@ -115,7 +125,7 @@ function Gestion() {
           </div>
 
           {/* Schedule Preview */}
-          <div className="rounded-[2rem] border border-slate-100 bg-slate-50/80 p-6 shadow-sm">
+          <div className="rounded-4xl border border-slate-100 bg-slate-50/80 p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="text-[20px] font-extrabold text-[#12356b]">Vista Previa del Horario</h2>
@@ -132,7 +142,7 @@ function Gestion() {
             </div>
 
             <div className="overflow-x-auto">
-              <div className="min-w-[1080px] px-1 pb-2">
+              <div className="min-w-270 px-1 pb-2">
                 <div className="grid grid-cols-[120px_repeat(5,minmax(150px,1fr))] items-center gap-x-4 pb-4">
                   <div />
                   {days.map((day) => (

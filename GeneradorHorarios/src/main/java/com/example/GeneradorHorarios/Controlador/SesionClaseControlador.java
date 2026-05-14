@@ -3,6 +3,7 @@ package com.example.GeneradorHorarios.Controlador;
 import com.example.GeneradorHorarios.Modelo.Aula;
 import com.example.GeneradorHorarios.Modelo.BloqueTiempo;
 import com.example.GeneradorHorarios.Modelo.ComponenteCarga;
+import com.example.GeneradorHorarios.Modelo.DTO.HorarioGeneradoSesionResponse;
 import com.example.GeneradorHorarios.Modelo.DTO.SesionClaseRequest;
 import com.example.GeneradorHorarios.Modelo.Repositorio.AulaRepositorio;
 import com.example.GeneradorHorarios.Modelo.Repositorio.BloqueTiempoRepositorio;
@@ -10,6 +11,7 @@ import com.example.GeneradorHorarios.Modelo.Repositorio.ComponenteCargaRepositor
 import com.example.GeneradorHorarios.Modelo.Repositorio.SesionClaseRepositorio;
 import com.example.GeneradorHorarios.Modelo.SesionClase;
 import com.example.GeneradorHorarios.Modelo.enums.EstadoSesion;
+import com.example.GeneradorHorarios.Servicio.HorarioGeneradoConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,10 +36,23 @@ public class SesionClaseControlador {
     @Autowired
     private AulaRepositorio aulaRepositorio;
 
+    @Autowired
+    private HorarioGeneradoConsultaService horarioGeneradoConsultaService;
+
     @GetMapping
     public ResponseEntity<List<SesionClase>> listarSesionClase(){
         List<SesionClase> lista = sesionClaseRepositorio.findAll();
         return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/periodo/{idPeriodoAcademico}/visualizacion")
+    public ResponseEntity<List<HorarioGeneradoSesionResponse>> listarHorarioGeneradoPorPeriodo(
+            @PathVariable Long idPeriodoAcademico
+    ) {
+        List<HorarioGeneradoSesionResponse> response = horarioGeneradoConsultaService
+                .listarPorPeriodo(idPeriodoAcademico);
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
@@ -63,6 +78,11 @@ public class SesionClaseControlador {
         nuevaSesionClase.setComponenteCarga(componenteCargaOpt.get());
         nuevaSesionClase.setBloqueTiempo(bloqueTiempoOpt.get());
         nuevaSesionClase.setAula(aulaOpt.get());
+        nuevaSesionClase.setNumeroSesion(
+                request.getNumeroSesion() != null && request.getNumeroSesion() > 0
+                        ? request.getNumeroSesion()
+                        : 1
+        );
 
         SesionClase sesionClaseGuardada = sesionClaseRepositorio.save(nuevaSesionClase);
 

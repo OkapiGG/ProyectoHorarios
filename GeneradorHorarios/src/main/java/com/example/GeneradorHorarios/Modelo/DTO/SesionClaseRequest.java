@@ -7,5 +7,6 @@ public class SesionClaseRequest {
     private Long idComponenteCarga;
     private Long idBloqueTiempo;
     private Long idAula;
+    private Integer numeroSesion;
     private String estado;
 }

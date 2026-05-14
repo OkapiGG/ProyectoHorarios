@@ -4,7 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "carga_academica")
+@Table(
+        name = "carga_academica",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"id_plan_detalle", "id_grupo", "id_periodo_academico"}
+        )
+)
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class CargaAcademica {
 
@@ -29,4 +34,3 @@ public class CargaAcademica {
     @JoinColumn(name = "id_periodo_academico", nullable = false)
     private PeriodoAcademico periodoAcademico;
 }
-

@@ -38,12 +38,40 @@ public class ComponenteCargaControlador {
             return ResponseEntity.badRequest().body("Error, la Carga Academica no existe");
         }
 
+        TipoSesion tipoSesion;
+
+        try {
+            tipoSesion = TipoSesion.valueOf(request.getTipoSesion().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body("Error, el Tipo de Sesion no es valido");
+        }
+
+        if(request.getNumSesiones() == null || request.getNumSesiones() <= 0){
+            return ResponseEntity.badRequest().body("Error, numSesiones debe ser mayor a 0");
+        }
+
+        if(request.getBloquesPorSesion() == null || request.getBloquesPorSesion() <= 0){
+            return ResponseEntity.badRequest().body("Error, bloquesPorSesion debe ser mayor a 0");
+        }
+
+        boolean yaExiste = componenteCargaRepositorio
+                .existsByCargaAcademica_IdCargaAcademicaAndTipoSesion(
+                        request.getIdCargaAcademica(),
+                        tipoSesion
+                );
+
+        if(yaExiste){
+            return ResponseEntity.badRequest().body(
+                    "Ya existe un componente de ese tipo para la carga academica"
+            );
+        }
+
         ComponenteCarga nuevoComponenteCarga = new ComponenteCarga();
 
-        nuevoComponenteCarga.setTipoSesion(TipoSesion.valueOf(request.getTipoSesion().toUpperCase()));
+        nuevoComponenteCarga.setTipoSesion(tipoSesion);
         nuevoComponenteCarga.setNumSesiones(request.getNumSesiones());
         nuevoComponenteCarga.setBloquesPorSesion(request.getBloquesPorSesion());
-        nuevoComponenteCarga.setRequiereConsecutivos(request.getRequiereConsecutivos());
+        nuevoComponenteCarga.setRequiereConsecutivos(Boolean.TRUE.equals(request.getRequiereConsecutivos()));
         nuevoComponenteCarga.setCargaAcademica(cargaAcademicaOpt.get());
 
         ComponenteCarga componenteCargaGuardado = componenteCargaRepositorio.save(nuevoComponenteCarga);
