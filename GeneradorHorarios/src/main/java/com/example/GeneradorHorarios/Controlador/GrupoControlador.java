@@ -7,6 +7,8 @@ import com.example.GeneradorHorarios.Modelo.Repositorio.CarreraRepositorio;
 import com.example.GeneradorHorarios.Modelo.Repositorio.GrupoRepositorio;
 import com.example.GeneradorHorarios.Modelo.enums.Turno;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,29 +28,55 @@ public class GrupoControlador {
 
     @GetMapping
     public ResponseEntity<List<Grupo>> listarGrupos(){
-        List<Grupo> lista = grupoRepositorio.findAll();
-        return ResponseEntity.ok(lista);
+        return ResponseEntity.ok(grupoRepositorio.findAll());
     }
 
     @PostMapping
     public ResponseEntity<?> crearGrupo(@RequestBody GrupoRequest request){
-
         Optional<Carrera> carreraOpt = carreraRepositorio.findById(request.getIdCarrera());
-
         if(!carreraOpt.isPresent()){
             return ResponseEntity.badRequest().body("Error, la carrera no existe");
         }
-
         Grupo nuevoGrupo = new Grupo();
-        nuevoGrupo.setSemestre(request.getSemestre());
-        nuevoGrupo.setClaveGrupo(request.getClaveGrupo());
-        nuevoGrupo.setCupoMaximo(request.getCupoMaximo());
-        nuevoGrupo.setTurno(Turno.valueOf(request.getTurno()));
-
-        nuevoGrupo.setCarrera(carreraOpt.get());
-
-        Grupo grupoGuardado = grupoRepositorio.save(nuevoGrupo);
-        return ResponseEntity.ok(grupoGuardado);
+        aplicarCampos(nuevoGrupo, request, carreraOpt.get());
+        return ResponseEntity.ok(grupoRepositorio.save(nuevoGrupo));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarGrupo(@PathVariable Long id, @RequestBody GrupoRequest request){
+        Optional<Grupo> opt = grupoRepositorio.findById(id);
+        if (!opt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El grupo no existe");
+        }
+        Optional<Carrera> carreraOpt = carreraRepositorio.findById(request.getIdCarrera());
+        if(!carreraOpt.isPresent()){
+            return ResponseEntity.badRequest().body("Error, la carrera no existe");
+        }
+        Grupo g = opt.get();
+        aplicarCampos(g, request, carreraOpt.get());
+        return ResponseEntity.ok(grupoRepositorio.save(g));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarGrupo(@PathVariable Long id){
+        if (!grupoRepositorio.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El grupo no existe");
+        }
+        try {
+            grupoRepositorio.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    "No se puede eliminar el grupo porque tiene cargas o sesiones asociadas."
+            );
+        }
+    }
+
+    private void aplicarCampos(Grupo g, GrupoRequest r, Carrera carrera) {
+        g.setSemestre(r.getSemestre());
+        g.setClaveGrupo(r.getClaveGrupo());
+        g.setCupoMaximo(r.getCupoMaximo());
+        g.setTurno(Turno.valueOf(r.getTurno()));
+        g.setCarrera(carrera);
+    }
 }

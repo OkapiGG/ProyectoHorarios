@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { CalendarRange, Edit2, Info, Lock, Trash2 } from "lucide-react";
+import { CalendarRange, Info, Lock } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearPlanEstudio, obtenerPlanEstudio } from "./service/PlanEstudioService";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarPlanEstudio,
+  crearPlanEstudio,
+  eliminarPlanEstudio,
+  obtenerPlanEstudio,
+} from "./service/PlanEstudioService";
 import { obtenerCarreras } from "./service/CarreraService";
 
 const tabs = ["Planes de Estudio", "Carreras"];
@@ -66,6 +71,17 @@ function usePlanEstudioConfig() {
     },
     loadItems: obtenerPlanEstudio,
     createItem: crearPlanEstudio,
+    updateItem: actualizarPlanEstudio,
+    deleteItem: eliminarPlanEstudio,
+    getItemId: (item) => item.idPlanEstudio,
+    describeItem: (p) => `el plan "${p.descripcion ?? ""}"`,
+    buildEditFormState: (p) => ({
+      idCarrera: String(p.idCarrera ?? p.carrera?.idCarrera ?? ""),
+      descripcion: p.descripcion ?? "",
+      vigenciaInicio: p.vigenciaInicio ?? "",
+      vigenciaFin: p.vigenciaFin ?? "",
+      activo: p.activo === true ? "true" : "false",
+    }),
     buildPayload: (formData) => ({
       idCarrera: Number(formData.idCarrera),
       descripcion: formData.descripcion.trim(),
@@ -217,10 +233,10 @@ function usePlanEstudioConfig() {
         <th className="pb-4 text-center">Acciones</th>
       </tr>
     ),
-    renderRow: (plan) => (
+    renderRow: (plan, _index, acciones) => (
       <tr
         key={plan.idPlanEstudio}
-        className="group cursor-pointer transition-colors hover:bg-gray-50"
+        className="group transition-colors hover:bg-gray-50"
       >
         <td className="py-4">
           <span className="text-sm font-bold text-gray-900">
@@ -261,14 +277,7 @@ function usePlanEstudioConfig() {
           </span>
         </td>
         <td className="py-4">
-          <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-            <button type="button" className="text-gray-400 hover:text-sigho-primary">
-              <Edit2 size={16} />
-            </button>
-            <button type="button" className="text-gray-400 hover:text-red-500">
-              <Trash2 size={16} />
-            </button>
-          </div>
+          <AccionesFila {...acciones} />
         </td>
       </tr>
     ),

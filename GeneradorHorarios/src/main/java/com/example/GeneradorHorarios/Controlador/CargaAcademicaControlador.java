@@ -4,6 +4,8 @@ import com.example.GeneradorHorarios.Modelo.*;
 import com.example.GeneradorHorarios.Modelo.DTO.CargaAcademicaRequest;
 import com.example.GeneradorHorarios.Modelo.Repositorio.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,4 +83,43 @@ public class CargaAcademicaControlador {
         return ResponseEntity.ok(cargaAcademicaGuardada);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarCargaAcademica(@PathVariable Long id, @RequestBody CargaAcademicaRequest request) {
+        Optional<CargaAcademica> opt = cargaAcademicaRepositorio.findById(id);
+        if (!opt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La carga no existe");
+        }
+
+        Optional<PlanEstudioDetalle> planDetalleOpt = planEstudioDetalleRepositorio.findById(request.getIdPlanDetalle());
+        Optional<Grupo> grupoOpt = grupoRepositorio.findById(request.getIdGrupo());
+        Optional<Profesor> profesorOpt = profesorRepositorio.findById(request.getIdProfesor());
+        Optional<PeriodoAcademico> periodoOpt = periodoAcademicoRepositorio.findById(request.getIdPeriodoAcademico());
+
+        if(!planDetalleOpt.isPresent()) return ResponseEntity.badRequest().body("Error, el Plan de Estudio Detalle no existe");
+        if(!grupoOpt.isPresent()) return ResponseEntity.badRequest().body("Error, el Grupo no existe");
+        if(!profesorOpt.isPresent()) return ResponseEntity.badRequest().body("Error, el Profesor no existe");
+        if(!periodoOpt.isPresent()) return ResponseEntity.badRequest().body("Error, el Periodo Academico no existe");
+
+        CargaAcademica c = opt.get();
+        c.setPlanEstudioDetalle(planDetalleOpt.get());
+        c.setGrupo(grupoOpt.get());
+        c.setProfesor(profesorOpt.get());
+        c.setPeriodoAcademico(periodoOpt.get());
+        return ResponseEntity.ok(cargaAcademicaRepositorio.save(c));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarCargaAcademica(@PathVariable Long id) {
+        if (!cargaAcademicaRepositorio.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La carga no existe");
+        }
+        try {
+            cargaAcademicaRepositorio.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    "No se puede eliminar la carga porque tiene componentes o sesiones asociadas."
+            );
+        }
+    }
 }

@@ -8,6 +8,8 @@ import com.example.GeneradorHorarios.Modelo.Repositorio.AulaRepositorio;
 import com.example.GeneradorHorarios.Modelo.Repositorio.EdificioRepositorio;
 import com.example.GeneradorHorarios.Modelo.enums.TipoAula;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +52,39 @@ public class AulaControlador {
             return ResponseEntity.ok(aulaGuardada);
         }
 
+        @PutMapping("/{id}")
+        public ResponseEntity<?> actualizarAula(@PathVariable Long id, @RequestBody AulaRequest request) {
+            Optional<Aula> aulaOpt = aulaRepositorio.findById(id);
+            if (!aulaOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El aula no existe");
+            }
 
+            Optional<Edificio> edificioOpt = edificioRepositorio.findById(request.getIdEdificio());
+            if (!edificioOpt.isPresent()) {
+                return ResponseEntity.badRequest().body("Error, el edificio especificado no existe");
+            }
 
+            Aula aula = aulaOpt.get();
+            aula.setNombreAula(request.getNombreAula());
+            aula.setCapacidad(request.getCapacidad());
+            aula.setTipoAula(TipoAula.valueOf(request.getAula().toUpperCase()));
+            aula.setEdificio(edificioOpt.get());
+
+            return ResponseEntity.ok(aulaRepositorio.save(aula));
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<?> eliminarAula(@PathVariable Long id) {
+            if (!aulaRepositorio.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El aula no existe");
+            }
+            try {
+                aulaRepositorio.deleteById(id);
+                return ResponseEntity.noContent().build();
+            } catch (DataIntegrityViolationException ex) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                        "No se puede eliminar el aula porque está siendo usada en sesiones o relaciones existentes."
+                );
+            }
+        }
 }

@@ -119,7 +119,8 @@ public class HorarioGeneradoConsultaService {
                     base.getBloqueTiempo().getDiaSemana(),
                     horaInicio.toString(),
                     horaFin.toString(),
-                    duracionHoras
+                    duracionHoras,
+                    base.getBloqueTiempo().getIdBloqueTiempo()
             );
         }
     }

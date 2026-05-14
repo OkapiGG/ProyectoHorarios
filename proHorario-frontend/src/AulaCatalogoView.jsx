@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { DoorOpen, Edit2, Trash2, Info, Lock } from "lucide-react";
+import { DoorOpen, Info, Lock } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearAula, obtenerAulas } from "./service/AulaService";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarAula,
+  crearAula,
+  eliminarAula,
+  obtenerAulas,
+} from "./service/AulaService";
 import { obtenerEdificios } from "./service/EdificioService";
 
 const tabs = ["Materias", "Profesores", "Carreras", "Aulas", "Edificios"];
@@ -73,6 +78,16 @@ function useAulaConfig() {
 
     loadItems: obtenerAulas,
     createItem: crearAula,
+    updateItem: actualizarAula,
+    deleteItem: eliminarAula,
+    getItemId: (item) => item.idAula,
+    describeItem: (item) => `el aula "${item.nombreAula}"`,
+    buildEditFormState: (aula) => ({
+      idEdificio: String(aula.idEdificio ?? aula.edificio?.idEdificio ?? ""),
+      nombreAula: aula.nombreAula ?? "",
+      capacidad: aula.capacidad ?? "",
+      aula: aula.aula ?? aula.tipoAula ?? "NORMAL",
+    }),
 
     searchPlaceholder: "Filtrar aulas...",
 
@@ -242,10 +257,10 @@ function useAulaConfig() {
       </tr>
     ),
 
-    renderRow: (aula) => (
+    renderRow: (aula, _index, acciones) => (
       <tr
         key={aula.idAula}
-        className="group cursor-pointer transition-colors hover:bg-gray-50"
+        className="group transition-colors hover:bg-gray-50"
       >
         <td className="py-4">
           <span className="text-sm font-bold text-gray-900">
@@ -287,18 +302,7 @@ function useAulaConfig() {
         </td>
 
         <td className="py-4">
-          <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-            <button
-              type="button"
-              className="text-gray-400 hover:text-sigho-primary"
-            >
-              <Edit2 size={16} />
-            </button>
-
-            <button type="button" className="text-gray-400 hover:text-red-500">
-              <Trash2 size={16} />
-            </button>
-          </div>
+          <AccionesFila {...acciones} />
         </td>
       </tr>
     ),

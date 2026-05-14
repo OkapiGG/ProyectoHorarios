@@ -1,6 +1,11 @@
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearEdificio, obtenerEdificios } from "./service/EdificioService";
-import { Building2, Edit2, Info, Lock, Trash2 } from "lucide-react";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarEdificio,
+  crearEdificio,
+  eliminarEdificio,
+  obtenerEdificios,
+} from "./service/EdificioService";
+import { Building2, Info, Lock } from "lucide-react";
 
 const initialFormState = {
   nombreEdificio: "",
@@ -21,6 +26,13 @@ const EdificioCatalogoView = createCatalogCrudPage({
   initialFormState,
   loadItems: obtenerEdificios,
   createItem: crearEdificio,
+  updateItem: actualizarEdificio,
+  deleteItem: eliminarEdificio,
+  getItemId: (item) => item.idEdificio,
+  describeItem: (item) => `el edificio "${item.nombreEdificio}"`,
+  buildEditFormState: (edificio) => ({
+    nombreEdificio: edificio.nombreEdificio ?? "",
+  }),
   buildPayload: (formData) => ({
     nombreEdificio: formData.nombreEdificio.trim(),
   }),
@@ -80,10 +92,10 @@ const EdificioCatalogoView = createCatalogCrudPage({
       <th className="pb-4 text-center">Acciones</th>
     </tr>
   ),
-  renderRow: (edificio) => (
+  renderRow: (edificio, _index, acciones) => (
     <tr
       key={edificio.idEdificio}
-      className="group cursor-pointer transition-colors hover:bg-gray-50"
+      className="group transition-colors hover:bg-gray-50"
     >
       <td className="py-4">
         <span className="text-sm font-bold text-gray-900">
@@ -109,14 +121,7 @@ const EdificioCatalogoView = createCatalogCrudPage({
         </span>
       </td>
       <td className="py-4">
-        <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-          <button type="button" className="text-gray-400 hover:text-sigho-primary">
-            <Edit2 size={16} />
-          </button>
-          <button type="button" className="text-gray-400 hover:text-red-500">
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <AccionesFila {...acciones} />
       </td>
     </tr>
   ),

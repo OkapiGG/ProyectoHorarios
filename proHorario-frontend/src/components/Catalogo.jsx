@@ -1,6 +1,56 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
-import { Plus, Search, Save, XCircle } from "lucide-react";
+import { Edit2, Pencil, Plus, Save, Search, Trash2, XCircle } from "lucide-react";
+
+/**
+ * Componente reusable para la columna de acciones de cada fila.
+ * Cada *CatalogoView lo usa dentro de renderRow para tener
+ * botones Editar/Eliminar consistentes.
+ */
+/**
+ * Extrae el mensaje real del backend de una excepcion axios.
+ * Soporta string plano, { message }, { error } y errores de red.
+ */
+function extraerMensajeError(error) {
+  if (!error?.response) return null;
+  const data = error.response.data;
+  if (typeof data === "string" && data.trim().length > 0) return data;
+  if (data && typeof data === "object") return data.message || data.error || null;
+  return null;
+}
+
+export function AccionesFila({ onEditar, onEliminar, editando = false, deshabilitado = false }) {
+  return (
+    <div className="flex items-center justify-center gap-2">
+      {onEditar ? (
+        <button
+          type="button"
+          onClick={onEditar}
+          disabled={deshabilitado}
+          className={`rounded-md p-1.5 transition-colors ${
+            editando
+              ? "bg-blue-100 text-blue-700"
+              : "text-gray-400 hover:bg-gray-100 hover:text-sigho-primary"
+          } disabled:opacity-50`}
+          title={editando ? "Editando este registro" : "Editar"}
+        >
+          <Edit2 size={14} />
+        </button>
+      ) : null}
+      {onEliminar ? (
+        <button
+          type="button"
+          onClick={onEliminar}
+          disabled={deshabilitado}
+          className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+          title="Eliminar"
+        >
+          <Trash2 size={14} />
+        </button>
+      ) : null}
+    </div>
+  );
+}
 
 function renderOption(option) {
   if (option && typeof option === "object") {
@@ -157,6 +207,17 @@ function createCatalogCrudPage(config) {
     const [activeTab, setActiveTab] = useState(
       resolvedConfig.defaultTab ?? resolvedConfig.tabs?.[0] ?? ""
     );
+    const [editingId, setEditingId] = useState(null);
+    const [eliminandoId, setEliminandoId] = useState(null);
+
+    const getItemId = (item) =>
+      typeof resolvedConfig.getItemId === "function"
+        ? resolvedConfig.getItemId(item)
+        : item?.id ?? item?.idAula ?? item?.idEdificio ?? item?.idMateria
+          ?? item?.idProfesor ?? item?.idGrupo ?? item?.idCarrera
+          ?? item?.idPlanEstudio ?? item?.idPlanDetalle ?? item?.idPeriodoAcademico
+          ?? item?.idBloqueTiempo ?? item?.idCargaAcademica ?? item?.idComponente
+          ?? item?.idGrupoAula ?? item?.idSesion ?? null;
 
     useEffect(() => {
       let isMounted = true;
@@ -195,7 +256,65 @@ function createCatalogCrudPage(config) {
 
     const resetForm = () => {
       setFormData(resolvedConfig.initialFormState);
+      setEditingId(null);
       setFeedback({ type: "idle", message: "" });
+    };
+
+    const handleEditar = (item) => {
+      if (typeof resolvedConfig.buildEditFormState !== "function") {
+        return;
+      }
+      const id = getItemId(item);
+      setEditingId(id);
+      setFormData(resolvedConfig.buildEditFormState(item));
+      setFeedback({
+        type: "idle",
+        message: "",
+      });
+    };
+
+    const handleEliminar = async (item) => {
+      if (typeof resolvedConfig.deleteItem !== "function") {
+        return;
+      }
+      const id = getItemId(item);
+      if (id == null) return;
+
+      const nombre =
+        typeof resolvedConfig.describeItem === "function"
+          ? resolvedConfig.describeItem(item)
+          : `${resolvedConfig.entityLabelSingular} #${id}`;
+
+      const confirmar = window.confirm(
+        `¿Eliminar ${nombre}?\n\nEsta acción no se puede deshacer.`
+      );
+      if (!confirmar) return;
+
+      setEliminandoId(id);
+      setFeedback({ type: "idle", message: "" });
+      try {
+        await resolvedConfig.deleteItem(id);
+        setItems((prev) => prev.filter((it) => getItemId(it) !== id));
+        // Si estabamos editando este item, limpiar el form
+        if (editingId === id) {
+          resetForm();
+        }
+        setFeedback({
+          type: "success",
+          message:
+            resolvedConfig.deleteSuccessMessage ??
+            `${resolvedConfig.entityLabelSingular} eliminado correctamente.`,
+        });
+      } catch (error) {
+        console.error(`Error al eliminar ${resolvedConfig.entityLabelSingular}:`, error);
+        setFeedback({
+          type: "error",
+          message: extraerMensajeError(error)
+            || `No se pudo eliminar. Es posible que esté relacionado con otros registros.`,
+        });
+      } finally {
+        setEliminandoId(null);
+      }
     };
 
     const handleGuardar = async (event) => {
@@ -219,6 +338,29 @@ function createCatalogCrudPage(config) {
       setFeedback({ type: "idle", message: "" });
 
       try {
+        if (editingId != null && typeof resolvedConfig.updateItem === "function") {
+          // ----- Actualizacion (PUT) -----
+          const savedItem = await resolvedConfig.updateItem(editingId, payload);
+          const nextRecord =
+            typeof resolvedConfig.buildLocalRecord === "function"
+              ? resolvedConfig.buildLocalRecord(savedItem, payload)
+              : savedItem ?? payload;
+
+          setItems((prev) =>
+            prev.map((it) => (getItemId(it) === editingId ? nextRecord : it))
+          );
+          setFeedback({
+            type: "success",
+            message:
+              resolvedConfig.updateSuccessMessage ??
+              `${resolvedConfig.entityLabelSingular} actualizado correctamente.`,
+          });
+          setFormData(resolvedConfig.initialFormState);
+          setEditingId(null);
+          return;
+        }
+
+        // ----- Creacion (POST) -----
         const savedItem = await resolvedConfig.createItem(payload);
         const nextRecord =
           typeof resolvedConfig.buildLocalRecord === "function"
@@ -235,12 +377,21 @@ function createCatalogCrudPage(config) {
         setFormData(resolvedConfig.initialFormState);
       } catch (error) {
         console.error(`Error al guardar ${resolvedConfig.entityLabelSingular}:`, error);
+
+        const mensajeBackend = extraerMensajeError(error);
+        const esErrorRed = !error?.response;
+        const operacion = editingId != null ? "actualizar" : "guardar";
+
         setFeedback({
           type: "error",
           message:
-            error?.response?.data?.message ||
-            resolvedConfig.createErrorMessage ||
-            `No se pudo guardar ${resolvedConfig.entityLabelSingular}. Revisa que el backend esté corriendo.`,
+            mensajeBackend ||
+            (esErrorRed
+              ? `No se pudo conectar con el servidor. Revisa que el backend esté corriendo.`
+              : (editingId != null
+                  ? resolvedConfig.updateErrorMessage
+                  : resolvedConfig.createErrorMessage) ||
+                `No se pudo ${operacion} ${resolvedConfig.entityLabelSingular}.`),
         });
       } finally {
         setIsSaving(false);
@@ -337,7 +488,22 @@ function createCatalogCrudPage(config) {
                   <thead>{resolvedConfig.renderTableHead()}</thead>
                   <tbody className="divide-y divide-gray-50">
                     {visibleItems.length > 0
-                      ? visibleItems.map((item, index) => resolvedConfig.renderRow(item, index))
+                      ? visibleItems.map((item, index) => {
+                          const id = getItemId(item);
+                          const acciones = {
+                            onEditar:
+                              typeof resolvedConfig.buildEditFormState === "function"
+                                ? () => handleEditar(item)
+                                : undefined,
+                            onEliminar:
+                              typeof resolvedConfig.deleteItem === "function"
+                                ? () => handleEliminar(item)
+                                : undefined,
+                            editando: editingId != null && editingId === id,
+                            deshabilitado: eliminandoId === id || isSaving,
+                          };
+                          return resolvedConfig.renderRow(item, index, acciones);
+                        })
                       : null}
                   </tbody>
                 </table>
@@ -372,15 +538,26 @@ function createCatalogCrudPage(config) {
 
           <aside className="flex w-[340px] shrink-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
             <div className="shrink-0 border-b border-gray-100 bg-sigho-sidebar px-5 py-4">
-              <div className="flex items-center gap-2.5">
-                {resolvedConfig.formIcon ? (
-                  <resolvedConfig.formIcon size={16} className="text-blue-300" />
+              <div className="flex items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2.5">
+                  {editingId != null ? (
+                    <Pencil size={15} className="text-amber-300" />
+                  ) : resolvedConfig.formIcon ? (
+                    <resolvedConfig.formIcon size={16} className="text-blue-300" />
+                  ) : null}
+                  <h2 className="text-sm font-bold tracking-wide text-white">
+                    {editingId != null
+                      ? `Editando registro #${editingId}`
+                      : resolvedConfig.formTitle ?? "Detalles del registro"}
+                  </h2>
+                </div>
+                {editingId != null ? (
+                  <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                    Edición
+                  </span>
                 ) : null}
-                <h2 className="text-sm font-bold tracking-wide text-white">
-                  {resolvedConfig.formTitle ?? "Detalles del registro"}
-                </h2>
               </div>
-              {resolvedConfig.formSubtitle ? (
+              {resolvedConfig.formSubtitle && editingId == null ? (
                 <p className="ml-6 mt-0.5 text-[11px] text-gray-400">
                   {resolvedConfig.formSubtitle}
                 </p>
@@ -433,15 +610,19 @@ function createCatalogCrudPage(config) {
                     className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
                   >
                     <XCircle size={14} />
-                    Limpiar
+                    {editingId != null ? "Cancelar" : "Limpiar"}
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-sigho-primary px-3 py-2 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      editingId != null ? "bg-amber-600" : "bg-sigho-primary"
+                    }`}
                   >
                     <Save size={14} />
-                    {isSaving ? "Guardando..." : "Guardar"}
+                    {isSaving
+                      ? editingId != null ? "Actualizando..." : "Guardando..."
+                      : editingId != null ? "Actualizar" : "Guardar"}
                   </button>
                 </div>
               </div>

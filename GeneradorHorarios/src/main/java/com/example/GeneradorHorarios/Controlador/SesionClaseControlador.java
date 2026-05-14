@@ -4,6 +4,7 @@ import com.example.GeneradorHorarios.Modelo.Aula;
 import com.example.GeneradorHorarios.Modelo.BloqueTiempo;
 import com.example.GeneradorHorarios.Modelo.ComponenteCarga;
 import com.example.GeneradorHorarios.Modelo.DTO.HorarioGeneradoSesionResponse;
+import com.example.GeneradorHorarios.Modelo.DTO.MoverSesionRequest;
 import com.example.GeneradorHorarios.Modelo.DTO.SesionClaseRequest;
 import com.example.GeneradorHorarios.Modelo.Repositorio.AulaRepositorio;
 import com.example.GeneradorHorarios.Modelo.Repositorio.BloqueTiempoRepositorio;
@@ -11,6 +12,7 @@ import com.example.GeneradorHorarios.Modelo.Repositorio.ComponenteCargaRepositor
 import com.example.GeneradorHorarios.Modelo.Repositorio.SesionClaseRepositorio;
 import com.example.GeneradorHorarios.Modelo.SesionClase;
 import com.example.GeneradorHorarios.Modelo.enums.EstadoSesion;
+import com.example.GeneradorHorarios.Servicio.EdicionSesionService;
 import com.example.GeneradorHorarios.Servicio.HorarioGeneradoConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,9 @@ public class SesionClaseControlador {
 
     @Autowired
     private HorarioGeneradoConsultaService horarioGeneradoConsultaService;
+
+    @Autowired
+    private EdicionSesionService edicionSesionService;
 
     @GetMapping
     public ResponseEntity<List<SesionClase>> listarSesionClase(){
@@ -87,5 +92,28 @@ public class SesionClaseControlador {
         SesionClase sesionClaseGuardada = sesionClaseRepositorio.save(nuevaSesionClase);
 
         return ResponseEntity.ok(sesionClaseGuardada);
+    }
+
+    /**
+     * Mueve una sesion logica (componente + numeroSesion) a un nuevo bloque
+     * inicial y/o aula. Para multi-bloque construye la secuencia consecutiva.
+     * Devuelve 409 si hay choques con el grid actual.
+     */
+    @PatchMapping("/logica")
+    public ResponseEntity<List<SesionClase>> moverSesionLogica(@RequestBody MoverSesionRequest request) {
+        List<SesionClase> resultado = edicionSesionService.moverSesionLogica(request);
+        return ResponseEntity.ok(resultado);
+    }
+
+    /**
+     * Elimina por completo una sesion logica del horario (libera todos sus bloques).
+     */
+    @DeleteMapping("/logica")
+    public ResponseEntity<Void> eliminarSesionLogica(
+            @RequestParam Long idComponente,
+            @RequestParam Integer numeroSesion
+    ) {
+        edicionSesionService.eliminarSesionLogica(idComponente, numeroSesion);
+        return ResponseEntity.noContent().build();
     }
 }

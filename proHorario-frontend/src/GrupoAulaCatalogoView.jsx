@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { Building2, DoorOpen, Info, Lock, Users } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
 import { obtenerGrupos } from "./service/GrupoService";
 import { obtenerAulas } from "./service/AulaService";
 import { obtenerPeriodoAcademico } from "./service/PeriodoAcademicoService";
-import { crearGrupoAula, obtenerGrupoAula } from "./service/GrupoAulaService";
+import {
+  actualizarGrupoAula,
+  crearGrupoAula,
+  eliminarGrupoAula,
+  obtenerGrupoAula,
+} from "./service/GrupoAulaService";
 
 const formatearGrupo = (grupo) => {
   if (!grupo) {
@@ -134,6 +139,15 @@ function useGrupoAulaConfig() {
     },
     loadItems: obtenerGrupoAula,
     createItem: crearGrupoAula,
+    updateItem: actualizarGrupoAula,
+    deleteItem: eliminarGrupoAula,
+    getItemId: (item) => item.idGrupoAula,
+    describeItem: (ga) => `la asignación de aula del grupo "${ga.grupo?.claveGrupo ?? ga.idGrupo}"`,
+    buildEditFormState: (ga) => ({
+      idGrupo: String(ga.idGrupo ?? ga.grupo?.idGrupo ?? ""),
+      idAula: String(ga.idAula ?? ga.aula?.idAula ?? ""),
+      idPeriodoAcademico: String(ga.idPeriodoAcademico ?? ga.periodoAcademico?.idPeriodoAcademico ?? ""),
+    }),
     buildPayload: (formData) => ({
       idGrupo: Number(formData.idGrupo),
       idAula: Number(formData.idAula),
@@ -284,12 +298,13 @@ function useGrupoAulaConfig() {
         <th className="pb-4">Aula</th>
         <th className="pb-4">Periodo</th>
         <th className="pb-4 text-center">Uso</th>
+        <th className="pb-4 text-center">Acciones</th>
       </tr>
     ),
-    renderRow: (item) => (
+    renderRow: (item, _index, acciones) => (
       <tr
         key={item.idGrupoAula}
-        className="group cursor-pointer transition-colors hover:bg-gray-50"
+        className="group transition-colors hover:bg-gray-50"
       >
         <td className="py-4">
           <span className="text-sm font-bold text-gray-900">
@@ -331,6 +346,9 @@ function useGrupoAulaConfig() {
           <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
             Base
           </span>
+        </td>
+        <td className="py-4">
+          <AccionesFila {...acciones} />
         </td>
       </tr>
     ),

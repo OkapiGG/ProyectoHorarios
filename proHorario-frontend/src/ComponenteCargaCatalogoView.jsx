@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Building2, Edit2, Info, Layers3, Lock, Trash2 } from "lucide-react";
+import { Building2, Info, Layers3, Lock } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
 import {
+  actualizarComponenteCarga,
   crearComponenteCarga,
+  eliminarComponenteCarga,
   obtenerComponentesCarga,
 } from "./service/ComponenteCargaService";
 import { obtenerCargasAcademicas } from "./service/CargaAcademicaService";
@@ -81,6 +83,17 @@ function useComponenteCargaConfig() {
     },
     loadItems: obtenerComponentesCarga,
     createItem: crearComponenteCarga,
+    updateItem: actualizarComponenteCarga,
+    deleteItem: eliminarComponenteCarga,
+    getItemId: (item) => item.idComponente,
+    describeItem: (c) => `el componente ${c.tipoSesion ?? ""} (#${c.idComponente})`,
+    buildEditFormState: (c) => ({
+      idCargaAcademica: String(c.idCargaAcademica ?? c.cargaAcademica?.idCargaAcademica ?? ""),
+      tipoSesion: c.tipoSesion ?? "TEORIA",
+      numSesiones: c.numSesiones ?? "",
+      bloquesPorSesion: c.bloquesPorSesion ?? "",
+      requiereConsecutivos: c.requiereConsecutivos === true ? "true" : "false",
+    }),
     buildPayload: (formData) => ({
       idCargaAcademica: Number(formData.idCargaAcademica),
       tipoSesion: formData.tipoSesion,
@@ -235,10 +248,10 @@ function useComponenteCargaConfig() {
         <th className="pb-4 text-center">Acciones</th>
       </tr>
     ),
-    renderRow: (componente) => (
+    renderRow: (componente, _index, acciones) => (
       <tr
         key={componente.idComponente}
-        className="group cursor-pointer transition-colors hover:bg-gray-50"
+        className="group transition-colors hover:bg-gray-50"
       >
         <td className="py-4">
           <span className="text-sm font-bold text-gray-900">
@@ -266,14 +279,7 @@ function useComponenteCargaConfig() {
           </span>
         </td>
         <td className="py-4">
-          <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-            <button type="button" className="text-gray-400 hover:text-sigho-primary">
-              <Edit2 size={16} />
-            </button>
-            <button type="button" className="text-gray-400 hover:text-red-500">
-              <Trash2 size={16} />
-            </button>
-          </div>
+          <AccionesFila {...acciones} />
         </td>
       </tr>
     ),

@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { Edit2, Info, Lock, Trash2, Users } from "lucide-react";
+import { Info, Lock, Users } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearGrupo, obtenerGrupos } from "./service/GrupoService";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarGrupo,
+  crearGrupo,
+  eliminarGrupo,
+  obtenerGrupos,
+} from "./service/GrupoService";
 import { obtenerCarreras } from "./service/CarreraService";
 
 const tabs = ["Materias", "Profesores", "Carreras", "Aulas", "Grupos"];
@@ -76,6 +81,17 @@ function useGrupoConfig() {
     },
     loadItems: obtenerGrupos,
     createItem: crearGrupo,
+    updateItem: actualizarGrupo,
+    deleteItem: eliminarGrupo,
+    getItemId: (item) => item.idGrupo,
+    describeItem: (g) => `el grupo "${g.claveGrupo ?? ""}"`,
+    buildEditFormState: (g) => ({
+      idCarrera: String(g.idCarrera ?? g.carrera?.idCarrera ?? ""),
+      semestre: g.semestre ?? "",
+      claveGrupo: g.claveGrupo ?? "",
+      cupoMaximo: g.cupoMaximo ?? "",
+      turno: g.turno ?? "MATUTINO",
+    }),
     buildPayload: (formData) => ({
       idCarrera: Number(formData.idCarrera),
       semestre: Number(formData.semestre),
@@ -239,10 +255,10 @@ function useGrupoConfig() {
         <th className="pb-4 text-center">Acciones</th>
       </tr>
     ),
-    renderRow: (grupo) => (
+    renderRow: (grupo, _index, acciones) => (
       <tr
         key={grupo.idGrupo}
-        className="group cursor-pointer transition-colors hover:bg-gray-50"
+        className="group transition-colors hover:bg-gray-50"
       >
         <td className="py-4">
           <span className="text-sm font-bold text-gray-900">
@@ -283,14 +299,7 @@ function useGrupoConfig() {
           </span>
         </td>
         <td className="py-4">
-          <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-            <button type="button" className="text-gray-400 hover:text-sigho-primary">
-              <Edit2 size={16} />
-            </button>
-            <button type="button" className="text-gray-400 hover:text-red-500">
-              <Trash2 size={16} />
-            </button>
-          </div>
+          <AccionesFila {...acciones} />
         </td>
       </tr>
     ),

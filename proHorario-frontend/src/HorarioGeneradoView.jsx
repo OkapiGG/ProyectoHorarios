@@ -1,19 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import { obtenerPeriodoActivo } from "./service/PeriodoAcademicoService";
 import { obtenerHorarioGeneradoPorPeriodo } from "./service/HorarioGeneradoService";
 import { obtenerGrupoAulaPorPeriodo } from "./service/GrupoAulaService";
+import { obtenerBloquesTiempo } from "./service/BloqueTiempoService";
+import { eliminarSesionLogica, moverSesionLogica } from "./service/SesionClaseService";
 import {
   Beaker,
   CalendarDays,
   ChevronDown,
   Clock3,
+  GripVertical,
   List,
   LoaderCircle,
+  Lock,
   MapPin,
   MoonStar,
+  Pencil,
   SunMedium,
+  Trash2,
   Users,
 } from "lucide-react";
 
@@ -107,6 +113,8 @@ function normalizarSesion(sesion) {
 
   return {
     id: sesion.claveSesion,
+    idComponente: sesion.idComponente,
+    idBloqueInicial: sesion.idBloqueInicial,
     grupoId: String(sesion.idGrupo),
     grupoEtiqueta: `${sesion.claveGrupo} · ${sesion.semestreGrupo}°`,
     grupoClave: sesion.claveGrupo,
@@ -234,17 +242,56 @@ function SelectFiltro({ label, value, onChange, options }) {
   );
 }
 
-function TarjetaSesion({ sesion }) {
+function TarjetaSesion({ sesion, modoEdicion = false, onDragStart, onDragEnd, onEliminar, arrastrando = false }) {
   const estilos = ESTILOS_TARJETA[sesion.color] ?? ESTILOS_TARJETA.azul;
   const esLaboratorio = sesion.tipo === "LABORATORIO";
   const esCompacta = sesion.duracion === 1;
 
+  const handleDragStart = (e) => {
+    if (!modoEdicion) return;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(sesion.id));
+    onDragStart?.(sesion);
+  };
+
+  const handleEliminar = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onEliminar?.(sesion);
+  };
+
   return (
     <div
-      className={`h-full overflow-hidden rounded-[26px] px-3 py-2 ${estilos.wrapper} ${
-        esLaboratorio ? "relative" : ""
-      }`}
+      draggable={modoEdicion}
+      onDragStart={handleDragStart}
+      onDragEnd={onDragEnd}
+      className={`group relative h-full overflow-hidden rounded-[26px] px-3 py-2 ${estilos.wrapper} ${
+        esLaboratorio ? "" : ""
+      } ${modoEdicion ? "cursor-grab active:cursor-grabbing" : ""} ${
+        arrastrando ? "opacity-40" : ""
+      } transition-opacity`}
+      title={modoEdicion ? "Arrastra para mover · click en papelera para eliminar" : ""}
     >
+      {modoEdicion ? (
+        <>
+          <div
+            className="pointer-events-none absolute left-1 top-1 opacity-0 transition-opacity group-hover:opacity-70"
+            aria-hidden="true"
+          >
+            <GripVertical size={14} className="text-current" />
+          </div>
+          <button
+            type="button"
+            onClick={handleEliminar}
+            onMouseDown={(e) => e.stopPropagation()}
+            draggable={false}
+            className="absolute right-1.5 top-1.5 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-rose-600 opacity-0 shadow-sm transition-all hover:bg-rose-50 hover:text-rose-700 group-hover:opacity-100"
+            title="Eliminar sesión"
+          >
+            <Trash2 size={13} />
+          </button>
+        </>
+      ) : null}
       {esLaboratorio ? (
         <>
           <div className="pointer-events-none absolute -right-2 top-0 text-white/12">
@@ -323,6 +370,16 @@ function SeccionTurno({
   badgeTone,
   borde,
   sesionesTurno,
+  turnoNombre,
+  modoEdicion = false,
+  sesionArrastrando = null,
+  dropTargetCelda = null,
+  onDragStartSesion,
+  onDragEndSesion,
+  onDragEnterCelda,
+  onDragLeaveCelda,
+  onDropCelda,
+  onEliminarSesion,
 }) {
   return (
     <section
@@ -387,6 +444,9 @@ function SeccionTurno({
                 const key = `${dia.key}-${hora}`;
                 const sesionInicio = sesionesTurno.mapa.get(key);
                 const ocupado = sesionesTurno.ocupados.has(key);
+                const celdaId = `${turnoNombre}-${dia.key}-${hora}`;
+                const esDropTarget = dropTargetCelda === celdaId;
+                const arrastrando = sesionArrastrando?.id === sesionInicio?.id;
 
                 if (sesionInicio) {
                   return (
@@ -398,7 +458,14 @@ function SeccionTurno({
                         gridRow: `${rowIndex + 2} / span ${sesionInicio.duracion}`,
                       }}
                     >
-                      <TarjetaSesion sesion={sesionInicio} />
+                      <TarjetaSesion
+                        sesion={sesionInicio}
+                        modoEdicion={modoEdicion}
+                        arrastrando={arrastrando}
+                        onDragStart={onDragStartSesion}
+                        onDragEnd={onDragEndSesion}
+                        onEliminar={onEliminarSesion}
+                      />
                     </div>
                   );
                 }
@@ -410,10 +477,40 @@ function SeccionTurno({
                 return (
                   <div
                     key={`${titulo}-${key}`}
-                    className="flex h-full min-h-[92px] items-center justify-center rounded-[22px] border border-dashed border-[#DCE6F5] bg-white/75 px-2 text-center text-[0.82rem] font-semibold uppercase tracking-[0.12em] text-[#D1DBEA]"
+                    onDragOver={
+                      modoEdicion && sesionArrastrando
+                        ? (e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = "move";
+                          }
+                        : undefined
+                    }
+                    onDragEnter={
+                      modoEdicion && sesionArrastrando
+                        ? () => onDragEnterCelda?.(celdaId)
+                        : undefined
+                    }
+                    onDragLeave={
+                      modoEdicion && sesionArrastrando
+                        ? () => onDragLeaveCelda?.(celdaId)
+                        : undefined
+                    }
+                    onDrop={
+                      modoEdicion && sesionArrastrando
+                        ? (e) => {
+                            e.preventDefault();
+                            onDropCelda?.({ dia: dia.key, hora, turnoNombre });
+                          }
+                        : undefined
+                    }
+                    className={`flex h-full min-h-[92px] items-center justify-center rounded-[22px] border border-dashed px-2 text-center text-[0.82rem] font-semibold uppercase tracking-[0.12em] transition-all ${
+                      esDropTarget
+                        ? "border-[#12356b] bg-blue-50/80 text-[#12356b] scale-[1.02]"
+                        : "border-[#DCE6F5] bg-white/75 text-[#D1DBEA]"
+                    }`}
                     style={{ gridColumn: colIndex + 2, gridRow: rowIndex + 2 }}
                   >
-                    Tiempo Libre
+                    {esDropTarget ? "Soltar aquí" : "Tiempo Libre"}
                   </div>
                 );
               })}
@@ -439,6 +536,14 @@ function HorarioGeneradoView() {
   const [seleccionInicialGrupoAplicada, setSeleccionInicialGrupoAplicada] =
     useState(false);
 
+  // Edicion manual (drag-and-drop)
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [bloquesTiempo, setBloquesTiempo] = useState([]);
+  const [sesionArrastrando, setSesionArrastrando] = useState(null);
+  const [dropTargetCelda, setDropTargetCelda] = useState(null);
+  const [mensajeEdicion, setMensajeEdicion] = useState({ tipo: "idle", texto: "" });
+  const [aplicandoCambio, setAplicandoCambio] = useState(false);
+
   useEffect(() => {
     let activa = true;
 
@@ -455,9 +560,10 @@ function HorarioGeneradoView() {
           : null;
 
         const periodo = periodoDesdeRuta ?? (await obtenerPeriodoActivo());
-        const [sesionesResponse, gruposAulaResponse] = await Promise.all([
+        const [sesionesResponse, gruposAulaResponse, bloquesResponse] = await Promise.all([
           obtenerHorarioGeneradoPorPeriodo(periodo.idPeriodoAcademico),
           obtenerGrupoAulaPorPeriodo(periodo.idPeriodoAcademico),
+          obtenerBloquesTiempo(),
         ]);
 
         if (!activa) {
@@ -467,6 +573,7 @@ function HorarioGeneradoView() {
         setPeriodoActivo(periodo);
         setSesionesBase(sesionesResponse.map(normalizarSesion));
         setGruposAula(gruposAulaResponse);
+        setBloquesTiempo(bloquesResponse);
       } catch (fetchError) {
         if (!activa) {
           return;
@@ -491,6 +598,127 @@ function HorarioGeneradoView() {
       activa = false;
     };
   }, [location.state]);
+
+  // ---------------- Edicion manual (drag-and-drop) ----------------
+
+  // Lookup rapido: (dia, turno, hora) -> idBloqueTiempo
+  const bloqueLookup = useMemo(() => {
+    const mapa = new Map();
+    for (const b of bloquesTiempo) {
+      const hora = Number.parseInt(String(b.horaInicio).slice(0, 2), 10);
+      mapa.set(`${b.diaSemana}-${b.turno}-${hora}`, b.idBloqueTiempo);
+    }
+    return mapa;
+  }, [bloquesTiempo]);
+
+  const recargarSesiones = useCallback(async () => {
+    if (!periodoActivo?.idPeriodoAcademico) return;
+    try {
+      const fresh = await obtenerHorarioGeneradoPorPeriodo(periodoActivo.idPeriodoAcademico);
+      setSesionesBase(fresh.map(normalizarSesion));
+    } catch (err) {
+      console.error("No se pudieron recargar las sesiones", err);
+    }
+  }, [periodoActivo]);
+
+  const handleDragStartSesion = useCallback((sesion) => {
+    setSesionArrastrando(sesion);
+    setMensajeEdicion({ tipo: "idle", texto: "" });
+  }, []);
+
+  const handleDragEndSesion = useCallback(() => {
+    setSesionArrastrando(null);
+    setDropTargetCelda(null);
+  }, []);
+
+  const handleDragEnterCelda = useCallback((celdaId) => {
+    setDropTargetCelda(celdaId);
+  }, []);
+
+  const handleDragLeaveCelda = useCallback((celdaId) => {
+    setDropTargetCelda((prev) => (prev === celdaId ? null : prev));
+  }, []);
+
+  const handleDropCelda = useCallback(
+    async ({ dia, hora, turnoNombre }) => {
+      if (!sesionArrastrando) return;
+      const sesion = sesionArrastrando;
+      const turnoBackend = turnoNombre === "MATUTINO" ? "MATUTINO" : "VESPERTINO";
+      const idBloque = bloqueLookup.get(`${dia}-${turnoBackend}-${hora}`);
+
+      setDropTargetCelda(null);
+      setSesionArrastrando(null);
+
+      if (!idBloque) {
+        setMensajeEdicion({
+          tipo: "error",
+          texto: "No existe un bloque para ese día/hora/turno.",
+        });
+        return;
+      }
+
+      if (sesion.idBloqueInicial === idBloque) {
+        return; // mismo lugar, no hace falta llamar al backend
+      }
+
+      setAplicandoCambio(true);
+      try {
+        await moverSesionLogica({
+          idComponente: sesion.idComponente,
+          numeroSesion: sesion.numeroSesion,
+          idBloqueInicialNuevo: idBloque,
+          idAulaNueva: Number.parseInt(sesion.aulaId, 10),
+        });
+        setMensajeEdicion({
+          tipo: "success",
+          texto: `Sesión movida a ${dia} ${String(hora).padStart(2, "0")}:00.`,
+        });
+        await recargarSesiones();
+      } catch (err) {
+        const status = err?.response?.status;
+        const data = err?.response?.data;
+        const detalle =
+          (typeof data === "string" && data) ||
+          data?.message ||
+          (status === 409
+            ? "El movimiento ya no es viable (choque detectado)."
+            : "No se pudo mover la sesión.");
+        setMensajeEdicion({ tipo: status === 409 ? "warning" : "error", texto: detalle });
+      } finally {
+        setAplicandoCambio(false);
+      }
+    },
+    [sesionArrastrando, bloqueLookup, recargarSesiones]
+  );
+
+  const handleEliminarSesion = useCallback(
+    async (sesion) => {
+      const confirmacion = window.confirm(
+        `¿Eliminar la sesión de "${sesion.materia}" del ${sesion.dia} ${String(sesion.horaInicio).padStart(2, "0")}:00?`
+      );
+      if (!confirmacion) return;
+
+      setAplicandoCambio(true);
+      try {
+        await eliminarSesionLogica(sesion.idComponente, sesion.numeroSesion);
+        setMensajeEdicion({
+          tipo: "success",
+          texto: `Sesión "${sesion.materia}" eliminada.`,
+        });
+        await recargarSesiones();
+      } catch (err) {
+        const data = err?.response?.data;
+        const detalle =
+          (typeof data === "string" && data) || data?.message || "No se pudo eliminar la sesión.";
+        setMensajeEdicion({ tipo: "error", texto: detalle });
+      } finally {
+        setAplicandoCambio(false);
+      }
+    },
+    [recargarSesiones]
+  );
+
+  // ---------------------------------------------------------------
 
   const grupos = useMemo(() => {
     const unicos = new Map();
@@ -802,6 +1030,53 @@ function HorarioGeneradoView() {
                     />
                   </section>
 
+                  {vista === "semanal" && grupoSeleccionado !== "TODOS" ? (
+                    <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setModoEdicion((v) => !v);
+                            setMensajeEdicion({ tipo: "idle", texto: "" });
+                          }}
+                          className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                            modoEdicion
+                              ? "bg-[#12356b] text-white shadow-sm"
+                              : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                          }`}
+                        >
+                          {modoEdicion ? <Lock size={13} /> : <Pencil size={13} />}
+                          {modoEdicion ? "Bloquear edición" : "Editar horario"}
+                        </button>
+                        {modoEdicion ? (
+                          <span className="text-[11px] font-semibold text-slate-500">
+                            Arrastra sesiones para moverlas · hover + papelera para eliminar
+                          </span>
+                        ) : null}
+                      </div>
+                      {aplicandoCambio ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                          <LoaderCircle size={13} className="animate-spin" />
+                          Aplicando cambio...
+                        </span>
+                      ) : null}
+                    </section>
+                  ) : null}
+
+                  {mensajeEdicion.texto ? (
+                    <div
+                      className={`rounded-xl border px-4 py-2.5 text-sm font-semibold ${
+                        mensajeEdicion.tipo === "error"
+                          ? "border-red-100 bg-red-50 text-red-700"
+                          : mensajeEdicion.tipo === "warning"
+                            ? "border-amber-100 bg-amber-50 text-amber-700"
+                            : "border-emerald-100 bg-emerald-50 text-emerald-700"
+                      }`}
+                    >
+                      {mensajeEdicion.texto}
+                    </div>
+                  ) : null}
+
                   {vista === "semanal" ? (
                     <section className="rounded-[34px] border border-slate-200/80 bg-[#FBFCFE] px-4 py-5 shadow-[0_20px_50px_rgba(15,23,42,0.05)] lg:px-5">
                       {grupoSeleccionado === "TODOS" ? (
@@ -827,6 +1102,16 @@ function HorarioGeneradoView() {
                             badgeTone="bg-[#FFF0B8] text-[#C98600]"
                             borde="border-[#F3DEA0]"
                             sesionesTurno={sesionesMatutinas}
+                            turnoNombre="MATUTINO"
+                            modoEdicion={modoEdicion}
+                            sesionArrastrando={sesionArrastrando}
+                            dropTargetCelda={dropTargetCelda}
+                            onDragStartSesion={handleDragStartSesion}
+                            onDragEndSesion={handleDragEndSesion}
+                            onDragEnterCelda={handleDragEnterCelda}
+                            onDragLeaveCelda={handleDragLeaveCelda}
+                            onDropCelda={handleDropCelda}
+                            onEliminarSesion={handleEliminarSesion}
                           />
 
                           <div className="rounded-[24px] border border-dashed border-[#D5DFF0] bg-[#F8FAFD] px-6 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
@@ -847,6 +1132,16 @@ function HorarioGeneradoView() {
                             badgeTone="bg-[#D9E7FF] text-[#315FB8]"
                             borde="border-[#D5E4FB]"
                             sesionesTurno={sesionesVespertinas}
+                            turnoNombre="VESPERTINO"
+                            modoEdicion={modoEdicion}
+                            sesionArrastrando={sesionArrastrando}
+                            dropTargetCelda={dropTargetCelda}
+                            onDragStartSesion={handleDragStartSesion}
+                            onDragEndSesion={handleDragEndSesion}
+                            onDragEnterCelda={handleDragEnterCelda}
+                            onDragLeaveCelda={handleDragLeaveCelda}
+                            onDropCelda={handleDropCelda}
+                            onEliminarSesion={handleEliminarSesion}
                           />
                         </div>
                       )}

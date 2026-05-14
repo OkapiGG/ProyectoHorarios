@@ -5,6 +5,8 @@ const grupoAulaService = createCatalogService("http://localhost:8080/api/grupo_a
 
 export const crearGrupoAula = grupoAulaService.create;
 export const obtenerGrupoAula = grupoAulaService.list;
+export const actualizarGrupoAula = grupoAulaService.update;
+export const eliminarGrupoAula = grupoAulaService.remove;
 export const obtenerGrupoAulaPorPeriodo = async (idPeriodoAcademico) => {
   const response = await axios.get(
     `http://localhost:8080/api/grupo_aula/periodo/${idPeriodoAcademico}`

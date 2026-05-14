@@ -7,3 +7,5 @@ const bloqueTiempoService = createCatalogService(
 export const crearBloqueTiempo = bloqueTiempoService.create;
 export const obtenerBloquesTiempo = bloqueTiempoService.list;
 export const obtenerBloqueTiempo = bloqueTiempoService.list;
+export const actualizarBloqueTiempo = bloqueTiempoService.update;
+export const eliminarBloqueTiempo = bloqueTiempoService.remove;

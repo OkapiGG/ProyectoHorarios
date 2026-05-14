@@ -1,7 +1,12 @@
-import { BookOpen, Edit2, Info, Lock, Trash2 } from "lucide-react";
+import { BookOpen, Info, Lock } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearMateria, listarMaterias } from "./service/MateriaService";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarMateria,
+  crearMateria,
+  eliminarMateria,
+  listarMaterias,
+} from "./service/MateriaService";
 
 const initialFormState = {
   claveMateria: "",
@@ -26,6 +31,16 @@ const MateriaCatalogoView = createCatalogCrudPage({
   initialFormState,
   loadItems: listarMaterias,
   createItem: crearMateria,
+  updateItem: actualizarMateria,
+  deleteItem: eliminarMateria,
+  getItemId: (item) => item.idMateria,
+  describeItem: (item) => `la materia "${item.nombreMateria}"`,
+  buildEditFormState: (m) => ({
+    claveMateria: m.claveMateria ?? "",
+    nombreMateria: m.nombreMateria ?? "",
+    creditos: m.creditos ?? "",
+    horasSemanales: m.horasSemanales ?? "",
+  }),
   buildPayload: (formData) => ({
     claveMateria: formData.claveMateria.trim(),
     nombreMateria: formData.nombreMateria.trim(),
@@ -145,10 +160,10 @@ const MateriaCatalogoView = createCatalogCrudPage({
       <th className="pb-4 text-center">Acciones</th>
     </tr>
   ),
-  renderRow: (materia) => (
+  renderRow: (materia, _index, acciones) => (
     <tr
       key={materia.idMateria}
-      className="group cursor-pointer transition-colors hover:bg-gray-50"
+      className="group transition-colors hover:bg-gray-50"
     >
       <td className="py-4">
         <span className="text-sm font-bold text-gray-900">
@@ -177,14 +192,7 @@ const MateriaCatalogoView = createCatalogCrudPage({
         </span>
       </td>
       <td className="py-4">
-        <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-          <button type="button" className="text-gray-400 hover:text-sigho-primary">
-            <Edit2 size={16} />
-          </button>
-          <button type="button" className="text-gray-400 hover:text-red-500">
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <AccionesFila {...acciones} />
       </td>
     </tr>
   ),

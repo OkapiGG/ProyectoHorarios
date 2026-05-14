@@ -6,3 +6,5 @@ const componenteCargaService = createCatalogService(
 
 export const crearComponenteCarga = componenteCargaService.create;
 export const obtenerComponentesCarga = componenteCargaService.list;
+export const actualizarComponenteCarga = componenteCargaService.update;
+export const eliminarComponenteCarga = componenteCargaService.remove;

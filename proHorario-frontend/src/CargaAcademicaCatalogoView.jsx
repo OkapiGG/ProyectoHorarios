@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { CalendarRange, Edit2, Info, Lock, Trash2, Users } from "lucide-react";
+import { CalendarRange, Info, Lock, Users } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearCargaAcademica, obtenerCargasAcademicas } from "./service/CargaAcademicaService";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarCargaAcademica,
+  crearCargaAcademica,
+  eliminarCargaAcademica,
+  obtenerCargasAcademicas,
+} from "./service/CargaAcademicaService";
 import { listarPlanEstudioDetalle } from "./service/PlanEstudioDetalleService";
 import { obtenerGrupos } from "./service/GrupoService";
 import { obtenerProfesor } from "./service/ProfesorService";
@@ -174,6 +179,16 @@ function useCargaAcademicaConfig() {
     },
     loadItems: obtenerCargasAcademicas,
     createItem: crearCargaAcademica,
+    updateItem: actualizarCargaAcademica,
+    deleteItem: eliminarCargaAcademica,
+    getItemId: (item) => item.idCargaAcademica,
+    describeItem: (c) => `la carga académica #${c.idCargaAcademica}`,
+    buildEditFormState: (c) => ({
+      idPlanDetalle: String(c.idPlanDetalle ?? c.planEstudioDetalle?.idPlanDetalle ?? ""),
+      idGrupo: String(c.idGrupo ?? c.grupo?.idGrupo ?? ""),
+      idProfesor: String(c.idProfesor ?? c.profesor?.idProfesor ?? ""),
+      idPeriodoAcademico: String(c.idPeriodoAcademico ?? c.periodoAcademico?.idPeriodoAcademico ?? ""),
+    }),
     buildPayload: (formData) => ({
       idPlanDetalle: Number(formData.idPlanDetalle),
       idGrupo: Number(formData.idGrupo),
@@ -363,10 +378,10 @@ function useCargaAcademicaConfig() {
         <th className="pb-4 text-center">Acciones</th>
       </tr>
     ),
-    renderRow: (carga) => (
+    renderRow: (carga, _index, acciones) => (
       <tr
         key={carga.idCargaAcademica}
-        className="group cursor-pointer transition-colors hover:bg-gray-50"
+        className="group transition-colors hover:bg-gray-50"
       >
         <td className="py-4">
           <span className="text-sm font-bold text-gray-900">
@@ -399,14 +414,7 @@ function useCargaAcademicaConfig() {
           </span>
         </td>
         <td className="py-4">
-          <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-            <button type="button" className="text-gray-400 hover:text-sigho-primary">
-              <Edit2 size={16} />
-            </button>
-            <button type="button" className="text-gray-400 hover:text-red-500">
-              <Trash2 size={16} />
-            </button>
-          </div>
+          <AccionesFila {...acciones} />
         </td>
       </tr>
     ),

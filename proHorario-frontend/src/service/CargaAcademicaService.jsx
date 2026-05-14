@@ -6,3 +6,5 @@ const cargaAcademicaService = createCatalogService(
 
 export const crearCargaAcademica = cargaAcademicaService.create;
 export const obtenerCargasAcademicas = cargaAcademicaService.list;
+export const actualizarCargaAcademica = cargaAcademicaService.update;
+export const eliminarCargaAcademica = cargaAcademicaService.remove;

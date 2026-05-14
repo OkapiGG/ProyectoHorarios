@@ -103,7 +103,7 @@ public class GeneradorHorarioService {
         if (aulas.isEmpty()) {
             throw new IllegalStateException("No existen aulas registradas");
         }
-
+        
         List<PropuestaDisponibilidad> propuestasAprobadas = propuestaRepositorio
                 .findByEstadoAndPeriodoAcademico_IdPeriodoAcademico(EstadoPropuesta.APROBADA, idPeriodoAcademico);
         List<DetalleHorario> detalles = detalleHorarioRepositorio.findByPropuestaDisponibilidadIn(propuestasAprobadas);

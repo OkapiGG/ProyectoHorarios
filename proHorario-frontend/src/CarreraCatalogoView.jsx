@@ -1,6 +1,11 @@
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearCarrera, obtenerCarreras } from "./service/CarreraService";
-import { Building2, Edit2, Info, Lock, Trash2 } from "lucide-react";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarCarrera,
+  crearCarrera,
+  eliminarCarrera,
+  obtenerCarreras,
+} from "./service/CarreraService";
+import { Building2, Info, Lock } from "lucide-react";
 
 const initialFormState = {
     nombreCarrera: "",
@@ -21,6 +26,11 @@ const CarreraCatalogoView = createCatalogCrudPage({
   initialFormState,
   loadItems: obtenerCarreras,
   createItem: crearCarrera,
+  updateItem: actualizarCarrera,
+  deleteItem: eliminarCarrera,
+  getItemId: (item) => item.idCarrera,
+  describeItem: (c) => `la carrera "${c.nombreCarrera}"`,
+  buildEditFormState: (c) => ({ nombreCarrera: c.nombreCarrera ?? "" }),
   buildPayload: (formData) => ({
     nombreCarrera: formData.nombreCarrera.trim(),
   }),
@@ -80,10 +90,10 @@ const CarreraCatalogoView = createCatalogCrudPage({
       <th className="pb-4 text-center">Acciones</th>
     </tr>
   ),
-  renderRow: (carrera) => (
+  renderRow: (carrera, _index, acciones) => (
     <tr
       key={carrera.idCarrera}
-      className="group cursor-pointer transition-colors hover:bg-gray-50"
+      className="group transition-colors hover:bg-gray-50"
     >
       <td className="py-4">
         <span className="text-sm font-bold text-gray-900">
@@ -109,14 +119,7 @@ const CarreraCatalogoView = createCatalogCrudPage({
         </span>
       </td>
       <td className="py-4">
-        <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-          <button type="button" className="text-gray-400 hover:text-sigho-primary">
-            <Edit2 size={16} />
-          </button>
-          <button type="button" className="text-gray-400 hover:text-red-500">
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <AccionesFila {...acciones} />
       </td>
     </tr>
   ),

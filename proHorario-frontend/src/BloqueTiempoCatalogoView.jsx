@@ -1,7 +1,12 @@
-import { Clock3, Edit2, Info, Lock, Trash2 } from "lucide-react";
+import { Clock3, Info, Lock } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearBloqueTiempo, obtenerBloquesTiempo } from "./service/BloqueTiempoService";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarBloqueTiempo,
+  crearBloqueTiempo,
+  eliminarBloqueTiempo,
+  obtenerBloquesTiempo,
+} from "./service/BloqueTiempoService";
 
 const diasSemana = [
   "LUNES",
@@ -50,6 +55,16 @@ const BloqueTiempoCatalogoView = createCatalogCrudPage({
   },
   loadItems: obtenerBloquesTiempo,
   createItem: crearBloqueTiempo,
+  updateItem: actualizarBloqueTiempo,
+  deleteItem: eliminarBloqueTiempo,
+  getItemId: (item) => item.idBloqueTiempo,
+  describeItem: (b) => `el bloque ${b.diaSemana} ${formatearHora(b.horaInicio)}-${formatearHora(b.horaFin)}`,
+  buildEditFormState: (b) => ({
+    diaSemana: b.diaSemana ?? "LUNES",
+    horaInicio: b.horaInicio ?? "",
+    horaFin: b.horaFin ?? "",
+    turno: b.turno ?? "MATUTINO",
+  }),
   buildPayload: (formData) => ({
     diaSemana: formData.diaSemana,
     horaInicio: formData.horaInicio,
@@ -187,10 +202,10 @@ const BloqueTiempoCatalogoView = createCatalogCrudPage({
       <th className="pb-4 text-center">Acciones</th>
     </tr>
   ),
-  renderRow: (bloque) => (
+  renderRow: (bloque, _index, acciones) => (
     <tr
       key={bloque.idBloqueTiempo}
-      className="group cursor-pointer transition-colors hover:bg-gray-50"
+      className="group transition-colors hover:bg-gray-50"
     >
       <td className="py-4">
         <span className="text-sm font-bold text-gray-900">
@@ -221,14 +236,7 @@ const BloqueTiempoCatalogoView = createCatalogCrudPage({
         </span>
       </td>
       <td className="py-4">
-        <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-          <button type="button" className="text-gray-400 hover:text-sigho-primary">
-            <Edit2 size={16} />
-          </button>
-          <button type="button" className="text-gray-400 hover:text-red-500">
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <AccionesFila {...acciones} />
       </td>
     </tr>
   ),

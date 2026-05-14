@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { Edit2, Info, Layers3, Lock, Trash2 } from "lucide-react";
+import { Info, Layers3, Lock } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearPlanEstudioDetalle, listarPlanEstudioDetalle } from "./service/PlanEstudioDetalleService";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarPlanEstudioDetalle,
+  crearPlanEstudioDetalle,
+  eliminarPlanEstudioDetalle,
+  listarPlanEstudioDetalle,
+} from "./service/PlanEstudioDetalleService";
 import { obtenerPlanEstudio } from "./service/PlanEstudioService";
 import { listarMaterias } from "./service/MateriaService";
 
@@ -87,6 +92,17 @@ function usePlanEstudioDetalleConfig() {
     },
     loadItems: listarPlanEstudioDetalle,
     createItem: crearPlanEstudioDetalle,
+    updateItem: actualizarPlanEstudioDetalle,
+    deleteItem: eliminarPlanEstudioDetalle,
+    getItemId: (item) => item.idPlanDetalle,
+    describeItem: (d) => `el detalle de plan #${d.idPlanDetalle}`,
+    buildEditFormState: (d) => ({
+      idPlanEstudio: String(d.idPlanEstudio ?? d.planEstudio?.idPlanEstudio ?? ""),
+      idMateria: String(d.idMateria ?? d.materia?.idMateria ?? ""),
+      semestre: d.semestre ?? "",
+      horasTeoria: d.horasTeoria ?? "",
+      horasLaboratorio: d.horasLaboratorio ?? "",
+    }),
     buildPayload: (formData) => ({
       idPlanEstudio: Number(formData.idPlanEstudio),
       idMateria: Number(formData.idMateria),
@@ -248,10 +264,10 @@ function usePlanEstudioDetalleConfig() {
         <th className="pb-4 text-center">Acciones</th>
       </tr>
     ),
-    renderRow: (detalle) => (
+    renderRow: (detalle, _index, acciones) => (
       <tr
         key={detalle.idPlanDetalle}
-        className="group cursor-pointer transition-colors hover:bg-gray-50"
+        className="group transition-colors hover:bg-gray-50"
       >
         <td className="py-4">
           <span className="text-sm font-bold text-gray-900">
@@ -290,14 +306,7 @@ function usePlanEstudioDetalleConfig() {
           </div>
         </td>
         <td className="py-4">
-          <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-            <button type="button" className="text-gray-400 hover:text-sigho-primary">
-              <Edit2 size={16} />
-            </button>
-            <button type="button" className="text-gray-400 hover:text-red-500">
-              <Trash2 size={16} />
-            </button>
-          </div>
+          <AccionesFila {...acciones} />
         </td>
       </tr>
     ),

@@ -4,3 +4,5 @@ const aulaService = createCatalogService("http://localhost:8080/api/aulas");
 
 export const crearAula = aulaService.create;
 export const obtenerAulas = aulaService.list;
+export const actualizarAula = aulaService.update;
+export const eliminarAula = aulaService.remove;

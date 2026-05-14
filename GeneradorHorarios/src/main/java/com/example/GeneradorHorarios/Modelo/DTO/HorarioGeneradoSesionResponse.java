@@ -29,4 +29,5 @@ public class HorarioGeneradoSesionResponse {
     private String horaInicio;
     private String horaFin;
     private Integer duracionHoras;
+    private Long idBloqueInicial;
 }

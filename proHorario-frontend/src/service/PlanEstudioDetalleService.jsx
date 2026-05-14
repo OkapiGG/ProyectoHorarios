@@ -4,3 +4,5 @@ const planEstudioDetalleService = createCatalogService("http://localhost:8080/ap
 
 export const crearPlanEstudioDetalle = planEstudioDetalleService.create;
 export const listarPlanEstudioDetalle = planEstudioDetalleService.list;
+export const actualizarPlanEstudioDetalle = planEstudioDetalleService.update;
+export const eliminarPlanEstudioDetalle = planEstudioDetalleService.remove;

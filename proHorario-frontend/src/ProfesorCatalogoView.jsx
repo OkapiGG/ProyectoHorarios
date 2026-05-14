@@ -1,6 +1,11 @@
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearProfesor, obtenerProfesor } from "./service/ProfesorService";
-import { Edit2, Info, Lock, Trash2, User } from "lucide-react";
+import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import {
+  actualizarProfesor,
+  crearProfesor,
+  eliminarProfesor,
+  obtenerProfesor,
+} from "./service/ProfesorService";
+import { Info, Lock, User } from "lucide-react";
 
 const initialFormState = {
   nomProfesor: "",
@@ -29,6 +34,20 @@ const ProfesorCatalogoView = createCatalogCrudPage({
   initialFormState,
   loadItems: obtenerProfesor,
   createItem: crearProfesor,
+  updateItem: actualizarProfesor,
+  deleteItem: eliminarProfesor,
+  getItemId: (item) => item.idProfesor,
+  describeItem: (p) => `al profesor "${[p.nomProfesor, p.apPaternoProfesor].filter(Boolean).join(" ")}"`,
+  buildEditFormState: (p) => ({
+    nomProfesor: p.nomProfesor ?? "",
+    apPaternoProfesor: p.apPaternoProfesor ?? "",
+    apMaternoProfesor: p.apMaternoProfesor ?? "",
+    correo: p.correo ?? "",
+    areaConocimiento: p.areaConocimiento ?? "Ciencias Exactas",
+    tipoContrato: p.tipoContrato ?? "Tiempo Completo",
+    aniosAntiguedad: p.aniosAntiguedad ?? 0,
+    maxGradoEstudios: p.maxGradoEstudios ?? "Doctorado",
+  }),
   buildPayload: (formData) => ({
     ...formData,
     nomProfesor: formData.nomProfesor.trim(),
@@ -174,10 +193,10 @@ const ProfesorCatalogoView = createCatalogCrudPage({
       <th className="pb-4 text-center">Acciones</th>
     </tr>
   ),
-  renderRow: (profe) => (
+  renderRow: (profe, _index, acciones) => (
     <tr
       key={profe.idProfesor}
-      className="group cursor-pointer transition-colors hover:bg-gray-50"
+      className="group transition-colors hover:bg-gray-50"
     >
       <td className="py-4">
         <span className="text-sm font-bold text-gray-900">
@@ -202,14 +221,7 @@ const ProfesorCatalogoView = createCatalogCrudPage({
         </span>
       </td>
       <td className="py-4">
-        <div className="flex items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
-          <button type="button" className="text-gray-400 hover:text-sigho-primary">
-            <Edit2 size={16} />
-          </button>
-          <button type="button" className="text-gray-400 hover:text-red-500">
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <AccionesFila {...acciones} />
       </td>
     </tr>
   ),
