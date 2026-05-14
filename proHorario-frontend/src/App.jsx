@@ -12,6 +12,7 @@ import CatalogosView from "./CatalogosView";
 import AulaCatalogoView from "./AulaCatalogoView";
 import CarreraCatalogoView from "./CarreraCatalogoView";
 import GrupoCatalogoView from "./GrupoCatalogoView";
+import GrupoAulaCatalogoView from "./GrupoAulaCatalogoView";
 import PlanEstudioCatalogoView from "./PlanEstudioCatalogoView";
 import PlanEstudioDetalleCatalogoView from "./PlanEstudioDetalleCatalogoView";
 import PeriodoAcademicoCatalogoView from "./PeriodoAcademicoCatalogoView";
@@ -26,6 +27,9 @@ import PropuestasCoordinacionView from "./PropuestasCoordinacionView";
 import PropuestaDetalleCoordinacionView from "./PropuestaDetalleCoordinacionView";
 import HistorialProfesorView from "./HistorialProfesorView";
 import PreferenciaMateriaProfesorView from "./PreferenciaMateriaProfesorView";
+import GeneradorView from "./GeneradorView";
+import HorarioGeneradoView from "./HorarioGeneradoView";
+import BandejaConflictosView from "./BandejaConflictosView";
 
 function App() {
   const getUsuarioGuardado = () => {
@@ -66,6 +70,7 @@ function App() {
           <Route path="/aulas" element={<AulaCatalogoView />} />
           <Route path="/CarreraCatalogoView" element={<CarreraCatalogoView />} />
           <Route path="/GrupoCatalogoView" element={<GrupoCatalogoView />} />
+          <Route path="/GrupoAulaCatalogoView" element={<GrupoAulaCatalogoView />} />
           <Route path="/grupos" element={<GrupoCatalogoView />} />
           <Route path="/PlanEstudioCatalogoView" element={<PlanEstudioCatalogoView />} />
           <Route
@@ -105,6 +110,9 @@ function App() {
             path="/preferencias-materia"
             element={<PreferenciaMateriaProfesorView />}
           />
+          <Route path="/generador" element={<GeneradorView />} />
+          <Route path="/conflictos" element={<BandejaConflictosView />} />
+          <Route path="/horario-generado" element={<HorarioGeneradoView />} />
           <Route path="/propuestas" element={<PropuestasCoordinacionView />} />
           <Route
             path="/propuestas/:idPropuesta"

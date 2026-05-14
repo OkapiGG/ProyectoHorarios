@@ -8,4 +8,8 @@ import java.util.List;
 
 public interface ComponenteCargaRepositorio extends JpaRepository<ComponenteCarga, Long> {
     List<ComponenteCarga> findByCargaAcademicaIn(List<CargaAcademica> cargasAcademicas);
+
+    boolean existsByCargaAcademica_IdCargaAcademicaAndTipoSesion(Long idCargaAcademica, com.example.GeneradorHorarios.Modelo.enums.TipoSesion tipoSesion);
+
+    List<ComponenteCarga> findByCargaAcademica_PeriodoAcademico_IdPeriodoAcademico(Long idPeriodoAcademico);
 }

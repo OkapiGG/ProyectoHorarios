@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import {
@@ -68,6 +68,16 @@ const catalogos = [
     route: "/GrupoCatalogoView",
     accent: "from-cyan-600 to-blue-500",
     chips: ["Asignación", "Horario", "Core"],
+  },
+  {
+    key: "grupoAula",
+    title: "Grupo Aula",
+    description:
+      "Define el aula base o preferida de cada grupo en un periodo académico.",
+    icon: DoorOpen,
+    route: "/GrupoAulaCatalogoView",
+    accent: "from-emerald-700 to-lime-500",
+    chips: ["Generador", "Base", "Periodo"],
   },
   {
     key: "planDetalle",
@@ -181,195 +191,102 @@ const catalogos = [
 
 function CatalogosView() {
   const navigate = useNavigate();
-  const [activeCatalogKey, setActiveCatalogKey] = useState("profesores");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const activeCatalog = useMemo(
-    () => catalogos.find((catalogo) => catalogo.key === activeCatalogKey) ?? catalogos[0],
-    [activeCatalogKey]
-  );
-
-  const ActiveIcon = activeCatalog.icon;
+  const catalogosFiltrados = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return catalogos;
+    return catalogos.filter(
+      (c) =>
+        c.title.toLowerCase().includes(term) ||
+        c.description.toLowerCase().includes(term)
+    );
+  }, [searchTerm]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-sigho-bg font-sans">
       <Sidebar />
 
-      <main className="relative min-w-0 flex-1 overflow-hidden">
-        <div className="app-scrollbar h-full overflow-y-auto px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 pb-24 lg:gap-8">
-            <header className="rounded-3xl border border-gray-100 bg-white px-5 py-5 shadow-sm ring-1 ring-gray-100 sm:px-6 lg:px-8">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sigho-primary text-white shadow-lg">
-                      <Sparkles size={22} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                        Centro de administración
-                      </p>
-                      <h1 className="mt-1 text-2xl font-bold text-gray-900">Catálogos</h1>
-                    </div>
-                  </div>
-                  <p className="mt-4 max-w-2xl text-sm text-gray-500">
-                    Elige un catálogo desde una sola vista. La idea es reducir clics y
-                    mantener un punto de entrada único para profesores, materias,
-                    edificios y el resto de catálogos.
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-4 lg:p-5">
+        <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <header className="shrink-0 border-b border-gray-100 px-5 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sigho-primary text-white">
+                  <Sparkles size={16} />
+                </div>
+                <div>
+                  <h1 className="text-lg font-extrabold tracking-tight text-gray-900">
+                    Catálogos
+                  </h1>
+                  <p className="text-xs text-gray-500">
+                    Datos maestros del sistema
                   </p>
                 </div>
-
-                <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 lg:min-w-[420px]">
-                  <div className="rounded-2xl bg-gray-50 px-4 py-3 text-center ring-1 ring-gray-100">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                      Activos
-                    </p>
-                    <p className="mt-1 text-xl font-extrabold text-gray-900">
-                      {catalogos.length}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-gray-50 px-4 py-3 text-center ring-1 ring-gray-100">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                      Base
-                    </p>
-                    <p className="mt-1 text-xl font-extrabold text-gray-900">CRUD</p>
-                  </div>
-                  <div className="rounded-2xl bg-gray-50 px-4 py-3 text-center ring-1 ring-gray-100">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                      Flujo
-                    </p>
-                    <p className="mt-1 text-xl font-extrabold text-gray-900">1 vista</p>
-                  </div>
-                </div>
-              </div>
-            </header>
-
-            <section className="grid min-h-0 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-              <div className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm ring-1 ring-gray-100 sm:p-6">
-                <div className="mb-5 flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                      Selector
-                    </p>
-                    <h2 className="mt-1 text-lg font-bold text-gray-900">
-                      Elige un catálogo
-                    </h2>
-                  </div>
-                  <div className="flex items-center rounded-xl bg-gray-50 px-3 py-2 ring-1 ring-gray-100">
-                    <Search size={16} className="mr-2 text-gray-400" />
-                    <span className="text-sm text-gray-500">Vista centralizada</span>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {catalogos.map((catalogo) => {
-                    const Icon = catalogo.icon;
-                    const isActive = catalogo.key === activeCatalogKey;
-
-                    return (
-                      <button
-                        key={catalogo.key}
-                        type="button"
-                        onClick={() => setActiveCatalogKey(catalogo.key)}
-                        className={`group rounded-3xl border p-5 text-left transition-all ${
-                          isActive
-                            ? "border-gray-900 bg-gray-900 text-white shadow-xl shadow-gray-200"
-                            : "border-gray-100 bg-gray-50/80 text-gray-900 hover:-translate-y-0.5 hover:border-gray-200 hover:bg-white hover:shadow-md"
-                        }`}
-                      >
-                        <div
-                          className={`mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${catalogo.accent} text-white shadow-lg`}
-                        >
-                          <Icon size={24} />
-                        </div>
-
-                        <h3 className="text-base font-bold">{catalogo.title}</h3>
-                        <p
-                          className={`mt-2 text-sm leading-relaxed ${
-                            isActive ? "text-gray-300" : "text-gray-500"
-                          }`}
-                        >
-                          {catalogo.description}
-                        </p>
-
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {catalogo.chips.map((chip) => (
-                            <span
-                              key={chip}
-                              className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                                isActive
-                                  ? "bg-white/10 text-white"
-                                  : "bg-white text-gray-500 ring-1 ring-gray-100"
-                              }`}
-                            >
-                              {chip}
-                            </span>
-                          ))}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
 
-              <aside className="flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm ring-1 ring-gray-100">
-                <div className={`bg-gradient-to-br ${activeCatalog.accent} p-6 text-white`}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/70">
-                        Catálogo activo
-                      </p>
-                      <h2 className="mt-2 text-2xl font-bold">{activeCatalog.title}</h2>
-                      <p className="mt-3 max-w-md text-sm leading-relaxed text-white/80">
-                        {activeCatalog.description}
-                      </p>
-                    </div>
-
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 shadow-inner backdrop-blur">
-                      <ActiveIcon size={28} />
-                    </div>
-                  </div>
+              <div className="flex flex-1 items-center sm:max-w-xs">
+                <div className="flex flex-1 items-center rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 transition-all focus-within:border-blue-500 focus-within:bg-white">
+                  <Search size={14} className="mr-2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Buscar catálogo..."
+                    className="w-full border-none bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                  />
                 </div>
+              </div>
+            </div>
+          </header>
 
-                <div className="flex flex-1 flex-col gap-5 p-6">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl bg-gray-50 px-4 py-4 ring-1 ring-gray-100">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                        Navegación
-                      </p>
-                      <p className="mt-1 text-lg font-extrabold text-gray-900">
-                        Unificada
-                      </p>
-                    </div>
-                    <div className="rounded-2xl bg-gray-50 px-4 py-4 ring-1 ring-gray-100">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                        Tipo
-                      </p>
-                      <p className="mt-1 text-lg font-extrabold text-gray-900">Catálogo</p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-3xl border border-gray-100 bg-gray-50/70 p-5">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                      Resumen
-                    </p>
-                    <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                      Usa esta vista como puerta de entrada a los datos maestros y a los
-                      módulos de soporte del generador. Aquí ya quedan reunidos los
-                      catálogos base, la disponibilidad y la afinidad materia-profesor.
-                    </p>
-                  </div>
-
+          <div className="flex-1 overflow-y-auto px-5 py-5">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {catalogosFiltrados.map((catalogo) => {
+                const Icon = catalogo.icon;
+                return (
                   <button
+                    key={catalogo.key}
                     type="button"
-                    onClick={() => navigate(activeCatalog.route)}
-                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-sigho-primary px-5 py-4 text-sm font-bold text-white shadow-lg transition-all hover:opacity-90"
+                    onClick={() => navigate(catalogo.route)}
+                    className="group flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
                   >
-                    Abrir catálogo
-                    <ArrowRight size={17} />
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${catalogo.accent} text-white shadow-sm`}
+                    >
+                      <Icon size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold text-gray-900">
+                        {catalogo.title}
+                      </h3>
+                      <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-gray-500">
+                        {catalogo.description}
+                      </p>
+                    </div>
+                    <div className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-sigho-primary opacity-0 transition-opacity group-hover:opacity-100">
+                      Abrir <ArrowRight size={12} />
+                    </div>
                   </button>
-                </div>
-              </aside>
-            </section>
+                );
+              })}
+            </div>
+
+            {catalogosFiltrados.length === 0 ? (
+              <div className="mt-10 flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50/60 p-8 text-center">
+                <Search size={24} className="mb-2 text-gray-400" />
+                <p className="text-sm font-semibold text-gray-700">
+                  Sin resultados
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  Ajusta el filtro de búsqueda.
+                </p>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="shrink-0 border-t border-gray-100 px-5 py-2.5 text-xs text-gray-500">
+            {catalogosFiltrados.length} de {catalogos.length} catálogos
           </div>
         </div>
       </main>

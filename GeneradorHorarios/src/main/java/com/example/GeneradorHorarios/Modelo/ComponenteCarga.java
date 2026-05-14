@@ -5,7 +5,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "componente_carga")
+@Table(
+        name = "componente_carga",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"id_carga_academica", "tipo_sesion"}
+        )
+)
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class ComponenteCarga {
 

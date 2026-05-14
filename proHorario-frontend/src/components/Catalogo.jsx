@@ -256,36 +256,37 @@ function createCatalogCrudPage(config) {
       <div className="flex h-screen overflow-hidden bg-sigho-bg font-sans">
         {resolvedConfig.sidebar ?? <Sidebar />}
 
-        <main className="flex-1 flex gap-6 overflow-hidden p-6 lg:p-8">
-          <section className="flex min-w-125 flex-1 flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
-            <div className="shrink-0 border-b border-gray-100 p-6">
-              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
-                    {resolvedConfig.headerKicker ?? "Configuración de Datos Maestros"}
-                  </p>
-                  <h1 className={`mt-2 text-2xl font-bold ${titleClassName}`}>
+        <main className="flex flex-1 gap-4 overflow-hidden p-4 lg:p-5">
+          <section className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="shrink-0 border-b border-gray-100 px-5 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <h1 className={`truncate text-lg font-extrabold tracking-tight ${titleClassName}`}>
                     {resolvedConfig.title}
                   </h1>
-                  <p className="mt-1 text-sm text-gray-500">{resolvedConfig.description}</p>
+                  {resolvedConfig.description ? (
+                    <p className="mt-0.5 line-clamp-1 text-xs text-gray-500">
+                      {resolvedConfig.description}
+                    </p>
+                  ) : null}
                 </div>
-                <div className="rounded-2xl bg-gray-50 px-4 py-3 text-sm font-medium text-gray-600 ring-1 ring-gray-100">
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
                   {resolvedConfig.itemsSummary?.(items.length, visibleItems.length) ??
-                    `${items.length} ${resolvedConfig.entityNamePlural} cargados`}
-                </div>
+                    `${items.length} ${resolvedConfig.entityNamePlural}`}
+                </span>
               </div>
 
               {resolvedConfig.tabs?.length ? (
-                <div className="flex gap-2">
+                <div className="mt-3 flex gap-1.5">
                   {resolvedConfig.tabs.map((tab) => (
                     <button
                       key={tab}
                       type="button"
                       onClick={() => setActiveTab(tab)}
-                      className={`rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
+                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                         activeTab === tab
-                          ? "bg-white text-sigho-primary shadow-sm ring-1 ring-gray-200"
-                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                          ? "bg-sigho-primary text-white shadow-sm"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                       }`}
                       >
                         {tab}
@@ -295,17 +296,17 @@ function createCatalogCrudPage(config) {
               ) : null}
             </div>
 
-            <div className="shrink-0 p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex flex-1 items-center rounded-xl border border-transparent bg-gray-50 px-4 py-3 transition-all focus-within:border-blue-500 focus-within:bg-white">
-                  <Search size={18} className="mr-3 text-gray-400" />
+            <div className="shrink-0 px-5 pt-4">
+              <div className="flex items-center gap-3">
+                <div className="flex flex-1 items-center rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 transition-all focus-within:border-blue-500 focus-within:bg-white">
+                  <Search size={15} className="mr-2 text-gray-400" />
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
                     placeholder={
                       resolvedConfig.searchPlaceholder ??
-                      `Filtrar ${resolvedConfig.entityNamePlural}...`
+                      `Buscar ${resolvedConfig.entityNamePlural}...`
                     }
                     className="w-full border-none bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
                   />
@@ -319,20 +320,20 @@ function createCatalogCrudPage(config) {
                       type: "success",
                       message:
                         resolvedConfig.newRecordMessage ??
-                        "Formulario limpio, listo para un nuevo registro.",
+                        "Formulario listo para un nuevo registro.",
                     });
                   }}
-                  className="flex items-center gap-2 rounded-xl bg-sigho-sidebar px-6 py-3 text-sm font-bold text-black shadow-md transition-colors hover:bg-green-400"
+                  className="flex items-center gap-1.5 rounded-lg bg-sigho-primary px-4 py-2 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-90"
                 >
-                  <Plus size={18} />
-                  {resolvedConfig.newRecordLabel ?? "NUEVO REGISTRO"}
+                  <Plus size={15} />
+                  Nuevo
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 pb-6">
+            <div className="flex-1 overflow-auto px-5 pb-2 pt-3">
               {resolvedConfig.renderTableHead ? (
-                <table className="w-full border-collapse text-left">
+                <table className="w-full min-w-max border-collapse text-left">
                   <thead>{resolvedConfig.renderTableHead()}</thead>
                   <tbody className="divide-y divide-gray-50">
                     {visibleItems.length > 0
@@ -343,13 +344,13 @@ function createCatalogCrudPage(config) {
               ) : null}
 
               {!visibleItems.length ? (
-                <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center">
+                <div className="mt-8 flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50/60 p-6 text-center">
                   {resolvedConfig.emptyStateIcon ? (
-                    <resolvedConfig.emptyStateIcon size={32} className="mb-3 text-gray-400" />
+                    <resolvedConfig.emptyStateIcon size={26} className="mb-2 text-gray-400" />
                   ) : null}
-                  <p className="text-sm font-bold text-gray-700">
+                  <p className="text-sm font-semibold text-gray-700">
                     {resolvedConfig.emptyStateTitle ??
-                      `No hay ${resolvedConfig.entityNamePlural} registrados`}
+                      `Sin ${resolvedConfig.entityNamePlural}`}
                   </p>
                   <p className="mt-1 text-xs text-gray-400">
                     {resolvedConfig.emptyStateDescription ??
@@ -359,37 +360,38 @@ function createCatalogCrudPage(config) {
               ) : null}
             </div>
 
-            <div className="flex items-center justify-between border-t border-gray-50 p-4 text-sm">
+            <div className="flex items-center justify-between border-t border-gray-100 px-5 py-2.5 text-xs">
               <span className="font-medium text-gray-500">
                 {resolvedConfig.footerLabel?.(visibleItems.length, items.length) ??
-                  `Mostrando ${visibleItems.length} ${resolvedConfig.entityNamePlural}`}
+                  `${visibleItems.length} / ${items.length}`}
               </span>
 
               {resolvedConfig.pagination ?? null}
             </div>
           </section>
 
-          <aside className="flex w-100 shrink-0 flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-lg">
-            <div className="relative shrink-0 overflow-hidden bg-sigho-sidebar p-6">
-              <div className="relative z-10 mb-1 flex items-center gap-3">
+          <aside className="flex w-[340px] shrink-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="shrink-0 border-b border-gray-100 bg-sigho-sidebar px-5 py-4">
+              <div className="flex items-center gap-2.5">
                 {resolvedConfig.formIcon ? (
-                  <resolvedConfig.formIcon size={20} className="text-blue-400" />
+                  <resolvedConfig.formIcon size={16} className="text-blue-300" />
                 ) : null}
-                <h2 className="font-bold tracking-wide text-white">
-                  {resolvedConfig.formTitle ?? "DETALLES DEL REGISTRO"}
+                <h2 className="text-sm font-bold tracking-wide text-white">
+                  {resolvedConfig.formTitle ?? "Detalles del registro"}
                 </h2>
               </div>
-              <p className="relative z-10 ml-8 text-xs text-gray-400">
-                {resolvedConfig.formSubtitle ?? "Alta y edición de registro"}
-              </p>
-              <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white opacity-5 blur-xl"></div>
+              {resolvedConfig.formSubtitle ? (
+                <p className="ml-6 mt-0.5 text-[11px] text-gray-400">
+                  {resolvedConfig.formSubtitle}
+                </p>
+              ) : null}
             </div>
 
             <form
               onSubmit={handleGuardar}
-              className="flex flex-1 flex-col overflow-y-auto p-6"
+              className="flex flex-1 flex-col overflow-hidden"
             >
-              <div className="space-y-5">
+              <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
                 {resolvedConfig.formLayout?.map((node, index) => (
                   <React.Fragment key={node.key ?? node.name ?? index}>
                     {renderFieldNode(node, formData, handleChange)}
@@ -397,14 +399,14 @@ function createCatalogCrudPage(config) {
                 ))}
 
                 {resolvedConfig.formInfoMessage ? (
-                  <div className="flex gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
+                  <div className="flex gap-2.5 rounded-lg border border-blue-100 bg-blue-50 p-3">
                     {resolvedConfig.formInfoIcon ? (
                       <resolvedConfig.formInfoIcon
-                        size={16}
+                        size={14}
                         className="mt-0.5 shrink-0 text-blue-600"
                       />
                     ) : null}
-                    <p className="text-xs font-medium leading-relaxed text-blue-800">
+                    <p className="text-[11px] font-medium leading-relaxed text-blue-800">
                       {resolvedConfig.formInfoMessage}
                     </p>
                   </div>
@@ -412,7 +414,7 @@ function createCatalogCrudPage(config) {
 
                 {feedback.message ? (
                   <div
-                    className={`rounded-xl px-4 py-3 text-sm font-medium ${
+                    className={`rounded-lg px-3 py-2 text-xs font-medium ${
                       feedback.type === "success"
                         ? "border border-emerald-100 bg-emerald-50 text-emerald-700"
                         : "border border-red-100 bg-red-50 text-red-700"
@@ -423,23 +425,23 @@ function createCatalogCrudPage(config) {
                 ) : null}
               </div>
 
-              <div className="mt-6 border-t border-gray-100 bg-gray-50 pt-6">
-                <div className="flex gap-3">
+              <div className="shrink-0 border-t border-gray-100 bg-gray-50/60 px-5 py-3">
+                <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50/30 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-red-200"
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
                   >
-                    <XCircle size={16} />
-                    {resolvedConfig.resetLabel ?? "LIMPIAR"}
+                    <XCircle size={14} />
+                    Limpiar
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-sigho-primary px-4 py-3 text-sm font-bold text-white shadow-md transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-sigho-primary px-3 py-2 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    <Save size={16} />
-                    {isSaving ? resolvedConfig.savingLabel ?? "GUARDANDO..." : resolvedConfig.submitLabel ?? "GUARDAR"}
+                    <Save size={14} />
+                    {isSaving ? "Guardando..." : "Guardar"}
                   </button>
                 </div>
               </div>

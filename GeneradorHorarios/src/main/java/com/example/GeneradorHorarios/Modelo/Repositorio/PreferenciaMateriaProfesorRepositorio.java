@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface PreferenciaMateriaProfesorRepositorio extends JpaRepository<PreferenciaMateriaProfesor, Long> {
     List<PreferenciaMateriaProfesor> findByProfesor_IdProfesor(Long idProfesor);
+    List<PreferenciaMateriaProfesor> findByPeriodoAcademico_IdPeriodoAcademico(Long idPeriodoAcademico);
 
     List<PreferenciaMateriaProfesor> findByProfesor_IdProfesorAndPeriodoAcademico_IdPeriodoAcademico(
             Long idProfesor,

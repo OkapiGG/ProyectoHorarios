@@ -57,6 +57,19 @@ public class CargaAcademicaControlador {
             return ResponseEntity.badRequest().body("Error, el Periodo Academico no existe");
         }
 
+        boolean yaExiste = cargaAcademicaRepositorio
+                .existsByPlanEstudioDetalle_IdPlanDetalleAndGrupo_IdGrupoAndPeriodoAcademico_IdPeriodoAcademico(
+                        request.getIdPlanDetalle(),
+                        request.getIdGrupo(),
+                        request.getIdPeriodoAcademico()
+                );
+
+        if(yaExiste){
+            return ResponseEntity.badRequest().body(
+                    "Ya existe una carga academica para ese plan detalle, grupo y periodo"
+            );
+        }
+
         CargaAcademica nuevoCargaAcademica = new CargaAcademica();
 
         nuevoCargaAcademica.setPlanEstudioDetalle(planEstudioDetalleOpt.get());

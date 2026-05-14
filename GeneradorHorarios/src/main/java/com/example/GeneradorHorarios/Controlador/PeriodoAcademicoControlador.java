@@ -27,6 +27,12 @@ public class PeriodoAcademicoControlador {
 
     @GetMapping("/activo")
     public ResponseEntity<?> obtenerPeriodoAcademicoActivo() {
+        long totalActivos = periodoAcademicoRepositorio.countByActivoTrue();
+
+        if (totalActivos > 1) {
+            return ResponseEntity.status(409).body("Existen multiples periodos academicos activos");
+        }
+
         Optional<PeriodoAcademico> periodoActivoOpt = periodoAcademicoRepositorio.findFirstByActivoTrue();
 
         if (!periodoActivoOpt.isPresent()) {
@@ -39,6 +45,16 @@ public class PeriodoAcademicoControlador {
     @PostMapping
     public ResponseEntity<PeriodoAcademico> crearPeriodoAcademico(@RequestBody PeriodoAcademicoRequest request){
         PeriodoAcademico nuevoPeriodoAcademico = new PeriodoAcademico();
+
+        if (Boolean.TRUE.equals(request.getActivo())) {
+            List<PeriodoAcademico> periodosActivos = periodoAcademicoRepositorio.findByActivoTrue();
+            for (PeriodoAcademico periodoActivo : periodosActivos) {
+                periodoActivo.setActivo(false);
+            }
+            if (!periodosActivos.isEmpty()) {
+                periodoAcademicoRepositorio.saveAll(periodosActivos);
+            }
+        }
 
         nuevoPeriodoAcademico.setDescripcion(request.getDescripcion());
         nuevoPeriodoAcademico.setAnio(request.getAnio());

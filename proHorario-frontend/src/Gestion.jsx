@@ -61,7 +61,11 @@ function Gestion() {
               <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <AlertCircle size={15} className="text-orange-500" /> Ver Conflictos
               </button>
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-700 rounded-xl text-sm font-bold text-white hover:bg-blue-800 transition-colors shadow-md shadow-blue-200">
+              <button
+                type="button"
+                onClick={() => navigate("/generador")}
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-700 rounded-xl text-sm font-bold text-white hover:bg-blue-800 transition-colors shadow-md shadow-blue-200"
+              >
                 <Zap size={15} /> Generar Horario
               </button>
             </div>

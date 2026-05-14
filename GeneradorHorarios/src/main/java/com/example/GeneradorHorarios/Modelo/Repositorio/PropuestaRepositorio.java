@@ -21,4 +21,9 @@ public interface PropuestaRepositorio extends JpaRepository<PropuestaDisponibili
             EstadoPropuesta estadoPropuesta,
             Long idPeriodoAcademico
     );
+
+    long countByEstadoAndPeriodoAcademico_IdPeriodoAcademico(
+            EstadoPropuesta estadoPropuesta,
+            Long idPeriodoAcademico
+    );
 }

@@ -10,4 +10,12 @@ public interface CargaAcademicaRepositorio extends JpaRepository<CargaAcademica,
             Long idProfesor,
             Long idPeriodoAcademico
     );
+
+    List<CargaAcademica> findByPeriodoAcademico_IdPeriodoAcademico(Long idPeriodoAcademico);
+
+    boolean existsByPlanEstudioDetalle_IdPlanDetalleAndGrupo_IdGrupoAndPeriodoAcademico_IdPeriodoAcademico(
+            Long idPlanDetalle,
+            Long idGrupo,
+            Long idPeriodoAcademico
+    );
 }

@@ -7,6 +7,7 @@ import {
   FilePen,
   GraduationCap,
   History,
+  Inbox,
   LayoutDashboard,
   LayoutGrid,
   LogOut,
@@ -27,6 +28,7 @@ const coordinatorNavItems = [
   { icon: ClipboardCheck, label: "Propuestas", path: "/propuestas" },
   { icon: Star, label: "Preferencias", path: "/preferencias-materia" },
   { icon: Sparkles, label: "Generador", path: "/generador" },
+  { icon: Inbox, label: "Conflictos", path: "/conflictos" },
 ];
 
 const profesorNavItems = [

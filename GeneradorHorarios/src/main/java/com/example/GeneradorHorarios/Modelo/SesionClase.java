@@ -8,6 +8,7 @@ import lombok.*;
 @Table(name = "sesion_clase",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"id_aula","id_bloque_tiempo"}),
+                @UniqueConstraint(columnNames = {"id_componente","id_bloque_tiempo"}),
         }
 )
 @Data @NoArgsConstructor @AllArgsConstructor
@@ -29,6 +30,9 @@ public class SesionClase {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_aula", nullable = false)
     private Aula aula;
+
+    @Column(name = "numero_sesion")
+    private Integer numeroSesion = 1;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

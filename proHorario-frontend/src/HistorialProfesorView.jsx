@@ -58,7 +58,7 @@ function HistorialProfesorView() {
     <div className="flex h-screen overflow-hidden bg-[#f4f7fb] font-sans">
       <Sidebar variant="profesor" />
       <main className="min-w-0 flex-1 overflow-hidden p-3">
-        <div className="flex h-full flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_26px_70px_rgba(15,23,42,0.08)]">
+        <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_26px_70px_rgba(15,23,42,0.08)]">
           <header className="flex shrink-0 flex-col gap-3 border-b border-slate-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#9a6b00]">
@@ -98,7 +98,7 @@ function HistorialProfesorView() {
                 </div>
               )}
 
-              <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
                 <div className="border-b border-slate-100 px-5 py-4">
                   <h2 className="text-lg font-extrabold text-slate-900">Propuestas registradas</h2>
                   <p className="mt-1 text-sm text-slate-500">
@@ -152,7 +152,7 @@ function HistorialProfesorView() {
             </section>
 
             <aside className="flex flex-col gap-4">
-              <section className="rounded-[24px] border border-slate-100 bg-white p-5 shadow-[inset_4px_0_0_0_#12356b,0_16px_36px_rgba(15,23,42,0.07)]">
+              <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-[inset_4px_0_0_0_#12356b,0_16px_36px_rgba(15,23,42,0.07)]">
                 <h3 className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#9a6b00]">
                   Resumen
                 </h3>
