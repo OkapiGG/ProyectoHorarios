@@ -21,10 +21,6 @@ import { useAuth } from "../auth/AuthContext";
 const coordinatorNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: LayoutGrid, label: "Catálogos", path: "/CatalogosView" },
-  { icon: GraduationCap, label: "Profesores", path: "/ProfesorView" },
-  { icon: FilePen, label: "Materia", path: "/MateriaView" },
-  { icon: Users, label: "Grupos", path: "/grupos" },
-  { icon: DoorOpen, label: "Aulas", path: "/aulas" },
   { icon: ClipboardCheck, label: "Propuestas", path: "/propuestas" },
   { icon: Star, label: "Preferencias", path: "/preferencias-materia" },
   { icon: Sparkles, label: "Generador", path: "/generador" },

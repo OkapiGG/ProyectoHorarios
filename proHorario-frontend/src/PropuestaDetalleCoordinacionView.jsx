@@ -26,12 +26,16 @@ function obtenerEstiloCelda(estado) {
   if (estado === "preferido") return "border-emerald-200 bg-emerald-50 text-emerald-500";
   if (estado === "prohibido") return "border-rose-200 bg-rose-50 text-rose-500";
   if (estado === "sin_bloque") return "border-slate-100 bg-slate-50 text-slate-200";
-  return "border-slate-200 bg-white text-slate-300";
+  return "border-slate-200 bg-white text-slate-500";
 }
 
 function IconoCelda({ estado }) {
-  if (estado === "preferido") return <Check size={18} strokeWidth={3} />;
-  if (estado === "prohibido") return <X size={18} strokeWidth={3} />;
+  if (estado === "preferido") {
+    return <span className="text-[20px] font-black leading-none text-emerald-500">✓</span>;
+  }
+  if (estado === "prohibido") {
+    return <span className="text-[20px] font-black leading-none text-rose-500">×</span>;
+  }
   return null;
 }
 

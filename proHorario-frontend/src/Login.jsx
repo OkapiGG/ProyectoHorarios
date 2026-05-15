@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { GraduationCap, Mail, Lock, LogIn, Search, Settings } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "./auth/AuthContext";
+import { playCrashSound, playLoginSound } from "./utils/soundEffects";
 
 function Login({ onLoginSuccess }) {
+  const navigate = useNavigate();
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [rolSeleccionado, setRolSeleccionado] = useState("PROFESOR");
@@ -30,9 +33,12 @@ function Login({ onLoginSuccess }) {
       login(respuesta.data, correo);
       localStorage.setItem("usuarioActual", JSON.stringify(respuesta.data));
       onLoginSuccess?.(respuesta.data);
+      navigate("/", { replace: true });
+      playLoginSound();
       alert("Bienvenido " + (respuesta.data.rol ?? "usuario"));
     } catch (error) {
       console.error("Error al iniciar sesion ", error);
+      playCrashSound();
       if (error.response && error.response.status === 401) {
         alert("Correo o contraseña incorrecto");
       } else {

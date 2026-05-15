@@ -32,22 +32,21 @@ import HorarioGeneradoView from "./HorarioGeneradoView";
 import BandejaConflictosView from "./BandejaConflictosView";
 
 function App() {
-  const getUsuarioGuardado = () => {
-    try {
-      const usuarioGuardado = localStorage.getItem("usuarioActual");
-      return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
-    } catch {
-      localStorage.removeItem("usuarioActual");
-      return null;
-    }
-  };
-
   const [sesionIniciada, setSesionIniciada] = useState(false);
-  const [usuarioActual, setUsuarioActual] = useState(getUsuarioGuardado);
+  const [usuarioActual, setUsuarioActual] = useState(null);
 
   useEffect(() => {
     setSesionIniciada(Boolean(usuarioActual));
   }, [usuarioActual]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    localStorage.removeItem("usuarioActual");
+    sessionStorage.removeItem("sigho_session");
+  }, []);
 
   const handleLoginSuccess = (usuario) => {
     setUsuarioActual(usuario);

@@ -1,32 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-
-const SESSION_KEY = "sigho_session";
+import { createContext, useContext, useMemo, useState } from "react";
 
 const AuthContext = createContext(null);
 
 function readStoredSession() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  try {
-    const rawSession = sessionStorage.getItem(SESSION_KEY);
-
-    if (!rawSession) {
-      return null;
-    }
-
-    const parsedSession = JSON.parse(rawSession);
-
-    if (!parsedSession?.isAuthenticated || !parsedSession?.user) {
-      return null;
-    }
-
-    return parsedSession;
-  } catch (error) {
-    console.error("No se pudo leer la sesión guardada:", error);
-    return null;
-  }
+  return null;
 }
 
 function buildSessionFromLoginResponse(loginData = {}, fallbackCorreo = "") {
@@ -53,18 +30,6 @@ function buildSessionFromLoginResponse(loginData = {}, fallbackCorreo = "") {
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(() => readStoredSession());
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    if (session) {
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    } else {
-      sessionStorage.removeItem(SESSION_KEY);
-    }
-  }, [session]);
 
   const login = (loginData, fallbackCorreo) => {
     setSession(buildSessionFromLoginResponse(loginData, fallbackCorreo));

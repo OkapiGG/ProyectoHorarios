@@ -9,7 +9,13 @@ import {
 } from "./service/PropuestaDisponibilidadService";
 import { Bell, CheckCircle2, Clock3, Eye, FileText, RotateCcw, Settings } from "lucide-react";
 
-const filtrosEstado = ["ENVIADA", "APROBADA", "BORRADOR"];
+const filtrosEstado = ["TODAS", "ENVIADA", "APROBADA", "BORRADOR"];
+
+const ordenEstados = {
+  ENVIADA: 0,
+  BORRADOR: 1,
+  APROBADA: 2,
+};
 
 function PropuestasCoordinacionView() {
   const navigate = useNavigate();
@@ -18,7 +24,7 @@ function PropuestasCoordinacionView() {
   const [cargando, setCargando] = useState(true);
   const [procesandoId, setProcesandoId] = useState(null);
   const [mensajeAccion, setMensajeAccion] = useState("");
-  const [estadoSeleccionado, setEstadoSeleccionado] = useState("ENVIADA");
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState("TODAS");
 
   useEffect(() => {
     if (!mensajeAccion) {
@@ -34,10 +40,30 @@ function PropuestasCoordinacionView() {
 
     try {
       const periodo = await obtenerPeriodoActivo();
-      const propuestasFiltradas = await obtenerPropuestasPorEstado(estadoSeleccionado, periodo.idPeriodoAcademico);
+      const propuestasFiltradas =
+        estadoSeleccionado === "TODAS"
+          ? (
+              await Promise.all(
+                ["ENVIADA", "BORRADOR", "APROBADA"].map((estado) =>
+                  obtenerPropuestasPorEstado(estado, periodo.idPeriodoAcademico)
+                )
+              )
+            ).flat()
+          : await obtenerPropuestasPorEstado(estadoSeleccionado, periodo.idPeriodoAcademico);
 
       setPeriodoActivo(periodo);
-      setPropuestas(propuestasFiltradas);
+      setPropuestas(
+        [...propuestasFiltradas].sort((a, b) => {
+          const ordenA = ordenEstados[a.estado] ?? 99;
+          const ordenB = ordenEstados[b.estado] ?? 99;
+
+          if (ordenA !== ordenB) {
+            return ordenA - ordenB;
+          }
+
+          return String(a.nombreProfesor ?? "").localeCompare(String(b.nombreProfesor ?? ""));
+        })
+      );
     } catch (error) {
       console.error("Error al cargar propuestas", error);
       setMensajeAccion("No se pudieron cargar las propuestas.");
@@ -116,7 +142,7 @@ function PropuestasCoordinacionView() {
                 Propuestas de disponibilidad recibidas
               </h1>
               <p className="mt-1 text-sm text-slate-500">
-                Revision de propuestas por estado para el periodo activo.
+                Lista completa de propuestas enviadas por el profesorado para el periodo activo.
               </p>
             </div>
             <div className="flex items-center gap-3 text-slate-500">
@@ -140,7 +166,7 @@ function PropuestasCoordinacionView() {
                 <div className="border-b border-slate-100 px-5 py-4">
                   <h2 className="text-lg font-extrabold text-slate-900">Listado de propuestas</h2>
                   <p className="mt-1 text-sm text-slate-500">
-                    Consulta propuestas del periodo activo segun su estado actual.
+                    Consulta todas las propuestas del periodo activo o filtra por estado.
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {filtrosEstado.map((estado) => (
@@ -220,13 +246,13 @@ function PropuestasCoordinacionView() {
                                   >
                                     <span className="inline-flex items-center gap-2">
                                       <Eye size={14} />
-                                      Ver
+                                      Revisar
                                     </span>
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleRechazar(propuesta.idProDisponibilidad)}
-                                    disabled={estaProcesando || estadoSeleccionado !== "ENVIADA"}
+                                    disabled={estaProcesando || propuesta.estado !== "ENVIADA"}
                                     className={`rounded-xl border px-4 py-2 text-sm font-bold transition-all ${
                                       estaProcesando || estadoSeleccionado !== "ENVIADA"
                                         ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
@@ -241,7 +267,7 @@ function PropuestasCoordinacionView() {
                                   <button
                                     type="button"
                                     onClick={() => handleAprobar(propuesta.idProDisponibilidad)}
-                                    disabled={estaProcesando || estadoSeleccionado !== "ENVIADA"}
+                                    disabled={estaProcesando || propuesta.estado !== "ENVIADA"}
                                     className={`rounded-xl px-4 py-2 text-sm font-bold text-white transition-all ${
                                       estaProcesando || estadoSeleccionado !== "ENVIADA"
                                         ? "cursor-not-allowed bg-emerald-300"

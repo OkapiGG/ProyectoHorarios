@@ -18,6 +18,7 @@ import {
   obtenerConflictosPendientes,
   obtenerSugerencias,
 } from "./service/ConflictoService";
+import { playCrashSound, playSuccessSound, playWarningSound } from "./utils/soundEffects";
 
 function obtenerMensajeError(error, fallback) {
   const data = error?.response?.data;
@@ -168,6 +169,9 @@ function BandejaConflictosView() {
       const lista = await obtenerConflictosPendientes(periodo.idPeriodoAcademico);
       setConflictos(lista);
       if (lista.length > 0) {
+        playCrashSound();
+      }
+      if (lista.length > 0) {
         setSeleccionado((prev) =>
           prev && lista.some((c) => c.idConflicto === prev.idConflicto)
             ? lista.find((c) => c.idConflicto === prev.idConflicto)
@@ -226,6 +230,7 @@ function BandejaConflictosView() {
         tipo: "success",
         texto: `Conflicto resuelto · ${resultado.sesionesCreadas} sesión(es) creada(s), ${resultado.sesionesEliminadas} movida(s).`,
       });
+      playSuccessSound();
       await cargarBandeja({ preserveMessage: true });
     } catch (error) {
       console.error("Fallo al aplicar sugerencia", error);
@@ -237,12 +242,14 @@ function BandejaConflictosView() {
             obtenerMensajeError(error, "La sugerencia ya no es viable.") +
             " Recargando sugerencias actualizadas.",
         });
+        playWarningSound();
         await cargarSugerencias(seleccionado.idConflicto);
       } else {
         setMensaje({
           tipo: "error",
           texto: obtenerMensajeError(error, "No se pudo aplicar la sugerencia."),
         });
+        playCrashSound();
       }
     } finally {
       setAplicandoId(null);
@@ -257,6 +264,7 @@ function BandejaConflictosView() {
     try {
       await descartarConflicto(seleccionado.idConflicto, motivo);
       setMensaje({ tipo: "success", texto: "Conflicto descartado." });
+      playCrashSound();
       await cargarBandeja({ preserveMessage: true });
     } catch (error) {
       console.error("No se pudo descartar el conflicto", error);
@@ -264,6 +272,7 @@ function BandejaConflictosView() {
         tipo: "error",
         texto: obtenerMensajeError(error, "No se pudo descartar el conflicto."),
       });
+      playCrashSound();
     }
   };
 

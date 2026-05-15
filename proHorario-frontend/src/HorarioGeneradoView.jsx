@@ -145,6 +145,15 @@ function contarMaterias(sesiones) {
   return new Set(sesiones.map((sesion) => sesion.materia)).size;
 }
 
+function formatearSemestre(semestre) {
+  const numero = Number.parseInt(String(semestre ?? ""), 10);
+  if (Number.isNaN(numero)) {
+    return `${semestre ?? "-"}°`;
+  }
+
+  return `${numero}°`;
+}
+
 function construirLayoutTurno(sesiones, horasTurno) {
   const horasPermitidas = new Set(horasTurno);
   const mapa = new Map();
@@ -195,6 +204,194 @@ function ResumenCard({ label, value, helper, icon: Icon, accent = false }) {
           <Icon size={18} />
         </div>
       </div>
+    </div>
+  );
+}
+
+function tarjetaResumenSesion(sesion) {
+  const estilos = ESTILOS_TARJETA[sesion.color] ?? ESTILOS_TARJETA.azul;
+
+  return (
+    <article
+      key={sesion.id}
+      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_10px_24px_rgba(15,23,42,0.04)]"
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] ${estilos.badge}`}
+        >
+          {sesion.tipo}
+        </span>
+        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9CAAC3]">
+          {sesion.dia}
+        </span>
+        <span className="text-[11px] font-semibold text-slate-500">
+          {formatearHora(sesion.horaInicio)} - {formatearHora(sesion.horaInicio + sesion.duracion)}
+        </span>
+      </div>
+
+      <div className="mt-2">
+        <h4 className="line-clamp-1 text-[0.96rem] font-black tracking-[-0.03em] text-[#12356b]">
+          {sesion.materia}
+        </h4>
+        <p className="mt-1 line-clamp-1 text-sm font-medium text-slate-500">{sesion.profesor}</p>
+        <p className="mt-0.5 line-clamp-1 text-xs text-slate-400">
+          {sesion.aula} · {sesion.grupoEtiqueta}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function ResumenTurnoSemestre({ titulo, sesiones, tono }) {
+  return (
+    <section className={`rounded-[28px] border ${tono.borde} bg-white shadow-[0_12px_32px_rgba(15,23,42,0.04)]`}>
+      <div className={`flex items-center justify-between gap-3 border-b px-5 py-4 ${tono.header}`}>
+        <div>
+          <p className={`text-[11px] font-extrabold uppercase tracking-[0.18em] ${tono.titulo}`}>
+            {titulo}
+          </p>
+          <p className="mt-1 text-sm font-semibold text-slate-500">
+            {sesiones.length ? `${sesiones.length} sesiones visibles` : "Sin sesiones en este turno"}
+          </p>
+        </div>
+        <div className={`rounded-full bg-white/80 px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] ${tono.badge}`}>
+          {tono.rango}
+        </div>
+      </div>
+
+      <div className="space-y-3 px-5 py-4">
+        {sesiones.length ? sesiones.map((sesion) => tarjetaResumenSesion(sesion)) : (
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm font-semibold text-slate-400">
+            No hay sesiones registradas en este turno.
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function VistaGlobalPorSemestre({ sesiones }) {
+  const semestres = useMemo(() => {
+    const grupos = new Map();
+
+    for (const sesion of sesiones) {
+      const semestre = String(sesion.semestreGrupo ?? "Sin semestre");
+      if (!grupos.has(semestre)) {
+        grupos.set(semestre, {
+          semestre,
+          sesiones: [],
+          matutino: [],
+          vespertino: [],
+          grupos: new Map(),
+        });
+      }
+
+      const bucket = grupos.get(semestre);
+      bucket.sesiones.push(sesion);
+
+      const turno = String(sesion.turnoGrupo ?? "").toUpperCase();
+      if (turno === "VESPERTINO") {
+        bucket.vespertino.push(sesion);
+      } else {
+        bucket.matutino.push(sesion);
+      }
+
+      if (!bucket.grupos.has(sesion.grupoId)) {
+        bucket.grupos.set(sesion.grupoId, sesion.grupoEtiqueta);
+      }
+    }
+
+    return Array.from(grupos.values())
+      .sort((a, b) => Number(a.semestre) - Number(b.semestre))
+      .map((bucket) => ({
+        ...bucket,
+        sesiones: [...bucket.sesiones].sort((a, b) => {
+          const indiceDiaA = DIAS.findIndex((dia) => dia.key === a.dia);
+          const indiceDiaB = DIAS.findIndex((dia) => dia.key === b.dia);
+
+          if (indiceDiaA !== indiceDiaB) {
+            return indiceDiaA - indiceDiaB;
+          }
+
+          return a.horaInicio - b.horaInicio;
+        }),
+        matutino: [...bucket.matutino].sort((a, b) => {
+          const indiceDiaA = DIAS.findIndex((dia) => dia.key === a.dia);
+          const indiceDiaB = DIAS.findIndex((dia) => dia.key === b.dia);
+          if (indiceDiaA !== indiceDiaB) return indiceDiaA - indiceDiaB;
+          return a.horaInicio - b.horaInicio;
+        }),
+        vespertino: [...bucket.vespertino].sort((a, b) => {
+          const indiceDiaA = DIAS.findIndex((dia) => dia.key === a.dia);
+          const indiceDiaB = DIAS.findIndex((dia) => dia.key === b.dia);
+          if (indiceDiaA !== indiceDiaB) return indiceDiaA - indiceDiaB;
+          return a.horaInicio - b.horaInicio;
+        }),
+      }));
+  }, [sesiones]);
+
+  const tonoMatutino = {
+    borde: "border-[#F3DEA0]",
+    header: "border-[#F8E7AE] bg-[#FFF8DE]",
+    titulo: "text-[#8C4A10]",
+    badge: "text-[#C98600]",
+    rango: "07:00 - 14:00",
+  };
+
+  const tonoVespertino = {
+    borde: "border-[#D5E4FB]",
+    header: "border-[#D7E7FF] bg-[#EEF4FF]",
+    titulo: "text-[#273E8A]",
+    badge: "text-[#315FB8]",
+    rango: "15:00 - 21:00",
+  };
+
+  return (
+    <div className="space-y-5">
+      {semestres.map((semestre) => (
+        <section
+          key={semestre.semestre}
+          className="rounded-[34px] border border-slate-200/80 bg-[#FBFCFE] px-4 py-5 shadow-[0_20px_50px_rgba(15,23,42,0.05)] lg:px-5"
+        >
+          <div className="mb-5 flex flex-col gap-2 border-b border-slate-200/80 pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#A0AEC8]">
+                Vista por semestre
+              </p>
+              <h3 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#12356b]">
+                {formatearSemestre(semestre.semestre)} Semestre
+              </h3>
+              <p className="mt-1 text-sm font-medium text-slate-500">
+                {semestre.grupos.size} grupos · {semestre.sesiones.length} sesiones
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {Array.from(semestre.grupos.values()).map((grupo) => (
+                <span
+                  key={grupo}
+                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm"
+                >
+                  {grupo}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-5 xl:grid-cols-2">
+            <ResumenTurnoSemestre
+              titulo="Turno Matutino"
+              sesiones={semestre.matutino}
+              tono={tonoMatutino}
+            />
+            <ResumenTurnoSemestre
+              titulo="Turno Vespertino"
+              sesiones={semestre.vespertino}
+              tono={tonoVespertino}
+            />
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
@@ -533,9 +730,6 @@ function HorarioGeneradoView() {
   const [gruposAula, setGruposAula] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-  const [seleccionInicialGrupoAplicada, setSeleccionInicialGrupoAplicada] =
-    useState(false);
-
   // Edicion manual (drag-and-drop)
   const [modoEdicion, setModoEdicion] = useState(false);
   const [bloquesTiempo, setBloquesTiempo] = useState([]);
@@ -773,15 +967,6 @@ function HorarioGeneradoView() {
       ...Array.from(unicas.values()).sort((a, b) => a.label.localeCompare(b.label)),
     ];
   }, [sesionesBase]);
-
-  useEffect(() => {
-    if (seleccionInicialGrupoAplicada || grupos.length <= 1) {
-      return;
-    }
-
-    setGrupoSeleccionado(grupos[1].value);
-    setSeleccionInicialGrupoAplicada(true);
-  }, [grupos, seleccionInicialGrupoAplicada]);
 
   const mapaGrupoAula = useMemo(() => {
     return new Map(gruposAula.map((item) => [String(item.idGrupo), item]));
@@ -1080,17 +1265,7 @@ function HorarioGeneradoView() {
                   {vista === "semanal" ? (
                     <section className="rounded-[34px] border border-slate-200/80 bg-[#FBFCFE] px-4 py-5 shadow-[0_20px_50px_rgba(15,23,42,0.05)] lg:px-5">
                       {grupoSeleccionado === "TODOS" ? (
-                        <div className="rounded-[26px] border border-dashed border-[#D7E3F5] bg-white/85 px-6 py-10 text-center">
-                          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#A0AEC8]">
-                            Vista semanal por grupo
-                          </p>
-                          <h3 className="mt-3 text-xl font-black tracking-[-0.04em] text-[#12356b]">
-                            Selecciona un grupo para visualizar su horario
-                          </h3>
-                          <p className="mt-2 text-sm font-medium text-slate-500">
-                            La vista semanal está diseñada para un solo grupo académico. Usa la vista lista si quieres revisar una vista global.
-                          </p>
-                        </div>
+                        <VistaGlobalPorSemestre sesiones={sesionesOrdenadas} />
                       ) : (
                         <div className="space-y-5">
                           <SeccionTurno

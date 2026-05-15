@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import { Edit2, Pencil, Plus, Save, Search, Trash2, XCircle } from "lucide-react";
+import { playCrashSound } from "../utils/soundEffects";
 
 /**
  * Componente reusable para la columna de acciones de cada fila.
@@ -299,6 +300,7 @@ function createCatalogCrudPage(config) {
         if (editingId === id) {
           resetForm();
         }
+        playCrashSound();
         setFeedback({
           type: "success",
           message:
@@ -307,6 +309,7 @@ function createCatalogCrudPage(config) {
         });
       } catch (error) {
         console.error(`Error al eliminar ${resolvedConfig.entityLabelSingular}:`, error);
+        playCrashSound();
         setFeedback({
           type: "error",
           message: extraerMensajeError(error)
