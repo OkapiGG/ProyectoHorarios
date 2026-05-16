@@ -1,4 +1,5 @@
 let audioContext = null;
+let audioUnlocked = false;
 
 function getAudioContext() {
   if (typeof window === "undefined") {
@@ -17,6 +18,36 @@ function getAudioContext() {
   return audioContext;
 }
 
+/**
+ * Listener global que destraba el AudioContext en el primer gesto del usuario
+ * (click, key, touch). Sin esto, los navegadores modernos rechazan
+ * ctx.resume() cuando se llama desde un .then() async porque el "user
+ * activation token" ya expiró.
+ *
+ * Se autoejecuta al importar el módulo y se desactiva tras el primer gesto.
+ */
+if (typeof window !== "undefined") {
+  const unlock = async () => {
+    if (audioUnlocked) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === "suspended") {
+      try {
+        await ctx.resume();
+      } catch {
+        return;
+      }
+    }
+    audioUnlocked = true;
+    window.removeEventListener("click", unlock);
+    window.removeEventListener("keydown", unlock);
+    window.removeEventListener("touchstart", unlock);
+  };
+  window.addEventListener("click", unlock, { passive: true });
+  window.addEventListener("keydown", unlock, { passive: true });
+  window.addEventListener("touchstart", unlock, { passive: true });
+}
+
 async function ensureAudioReady() {
   const ctx = getAudioContext();
   if (!ctx) {
@@ -32,6 +63,27 @@ async function ensureAudioReady() {
   }
 
   return ctx;
+}
+
+/**
+ * Llamada SÍNCRONA que debe invocarse desde un user gesture (click handler).
+ * Crea el AudioContext si no existe y dispara resume() de inmediato.
+ * Devuelve una promesa, pero el efecto crítico de "destrabar" sucede sincrónico
+ * antes de que el token de user-activation expire.
+ */
+export function primeAudio() {
+  const ctx = getAudioContext();
+  if (!ctx) return Promise.resolve(null);
+  if (ctx.state === "suspended") {
+    // No await: arrancamos la promesa pero retornamos inmediatamente.
+    // El resume() ya quedó solicitado bajo la user activation actual.
+    return ctx.resume().then(() => {
+      audioUnlocked = true;
+      return ctx;
+    }).catch(() => null);
+  }
+  audioUnlocked = true;
+  return Promise.resolve(ctx);
 }
 
 function playTone(ctx, { frequency, duration = 140, type = "sine", gain = 0.06, when = 0 }) {

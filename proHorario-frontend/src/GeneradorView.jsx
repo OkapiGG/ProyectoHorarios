@@ -18,7 +18,7 @@ import {
   Sparkles,
   TriangleAlert,
 } from "lucide-react";
-import { playCrashSound, playSuccessSound } from "./utils/soundEffects";
+import { playCrashSound, playSuccessSound, primeAudio } from "./utils/soundEffects";
 
 function obtenerMensajeError(error, fallback) {
   const data = error?.response?.data;
@@ -120,6 +120,8 @@ function GeneradorView() {
   }, [inputGenerador]);
 
   const handleEjecutar = async () => {
+    primeAudio();
+
     if (!periodoActivo?.idPeriodoAcademico) {
       setResultado(null);
       setMensaje({
@@ -142,9 +144,9 @@ function GeneradorView() {
           : "La generación terminó sin conflictos.",
       });
       if (response.exitoParcial) {
-        playCrashSound();
+        await playCrashSound();
       } else {
-        playSuccessSound();
+        await playSuccessSound();
       }
       await cargarPanel({ preserveMessage: true });
     } catch (error) {
@@ -157,7 +159,7 @@ function GeneradorView() {
           "No se pudo ejecutar el generador de horarios."
         ),
       });
-      playCrashSound();
+      await playCrashSound();
     } finally {
       setEjecutando(false);
     }

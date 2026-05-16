@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import { Edit2, Pencil, Plus, Save, Search, Trash2, XCircle } from "lucide-react";
-import { playCrashSound } from "../utils/soundEffects";
+import { playCrashSound, playSuccessSound, primeAudio } from "../utils/soundEffects";
+import { useAppDialog } from "./AppDialog";
 
 /**
  * Componente reusable para la columna de acciones de cada fila.
@@ -210,6 +211,7 @@ function createCatalogCrudPage(config) {
     );
     const [editingId, setEditingId] = useState(null);
     const [eliminandoId, setEliminandoId] = useState(null);
+    const dialog = useAppDialog();
 
     const getItemId = (item) =>
       typeof resolvedConfig.getItemId === "function"
@@ -278,6 +280,8 @@ function createCatalogCrudPage(config) {
       if (typeof resolvedConfig.deleteItem !== "function") {
         return;
       }
+      primeAudio();
+
       const id = getItemId(item);
       if (id == null) return;
 
@@ -286,9 +290,12 @@ function createCatalogCrudPage(config) {
           ? resolvedConfig.describeItem(item)
           : `${resolvedConfig.entityLabelSingular} #${id}`;
 
-      const confirmar = window.confirm(
-        `¿Eliminar ${nombre}?\n\nEsta acción no se puede deshacer.`
-      );
+      const confirmar = await dialog.confirm({
+        variant: "danger",
+        title: "Eliminar registro",
+        message: `¿Eliminar ${nombre}?\n\nEsta acción no se puede deshacer.`,
+        confirmLabel: "Eliminar",
+      });
       if (!confirmar) return;
 
       setEliminandoId(id);
@@ -300,7 +307,7 @@ function createCatalogCrudPage(config) {
         if (editingId === id) {
           resetForm();
         }
-        playCrashSound();
+        await playCrashSound();
         setFeedback({
           type: "success",
           message:
@@ -309,7 +316,7 @@ function createCatalogCrudPage(config) {
         });
       } catch (error) {
         console.error(`Error al eliminar ${resolvedConfig.entityLabelSingular}:`, error);
-        playCrashSound();
+        await playCrashSound();
         setFeedback({
           type: "error",
           message: extraerMensajeError(error)
@@ -322,6 +329,7 @@ function createCatalogCrudPage(config) {
 
     const handleGuardar = async (event) => {
       event.preventDefault();
+      primeAudio();
 
       const payload =
         typeof resolvedConfig.buildPayload === "function"
@@ -358,6 +366,7 @@ function createCatalogCrudPage(config) {
               resolvedConfig.updateSuccessMessage ??
               `${resolvedConfig.entityLabelSingular} actualizado correctamente.`,
           });
+          await playSuccessSound();
           setFormData(resolvedConfig.initialFormState);
           setEditingId(null);
           return;
@@ -377,6 +386,7 @@ function createCatalogCrudPage(config) {
             resolvedConfig.createSuccessMessage ??
             `${resolvedConfig.entityLabelSingular} guardado correctamente.`,
         });
+        await playSuccessSound();
         setFormData(resolvedConfig.initialFormState);
       } catch (error) {
         console.error(`Error al guardar ${resolvedConfig.entityLabelSingular}:`, error);
@@ -396,6 +406,7 @@ function createCatalogCrudPage(config) {
                   : resolvedConfig.createErrorMessage) ||
                 `No se pudo ${operacion} ${resolvedConfig.entityLabelSingular}.`),
         });
+        await playCrashSound();
       } finally {
         setIsSaving(false);
       }

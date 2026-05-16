@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Info, Lock, Users } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarGrupo,
   crearGrupo,
   eliminarGrupo,
   obtenerGrupos,
-} from "./service/GrupoService";
-import { obtenerCarreras } from "./service/CarreraService";
+} from "../service/GrupoService";
+import { obtenerCarreras } from "../service/CarreraService";
 
 const tabs = ["Materias", "Profesores", "Carreras", "Aulas", "Grupos"];
 const turnosPermitidos = ["MATUTINO", "VESPERTINO"];

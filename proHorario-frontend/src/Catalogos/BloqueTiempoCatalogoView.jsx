@@ -1,12 +1,12 @@
 import { Clock3, Info, Lock } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarBloqueTiempo,
   crearBloqueTiempo,
   eliminarBloqueTiempo,
   obtenerBloquesTiempo,
-} from "./service/BloqueTiempoService";
+} from "../service/BloqueTiempoService";
 
 const diasSemana = [
   "LUNES",

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { CalendarRange, Info, Lock } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarPlanEstudio,
   crearPlanEstudio,
   eliminarPlanEstudio,
   obtenerPlanEstudio,
-} from "./service/PlanEstudioService";
-import { obtenerCarreras } from "./service/CarreraService";
+} from "../service/PlanEstudioService";
+import { obtenerCarreras } from "../service/CarreraService";
 
 const tabs = ["Planes de Estudio", "Carreras"];
 

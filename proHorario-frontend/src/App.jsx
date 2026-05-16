@@ -4,24 +4,24 @@ import { useEffect, useState } from "react";
 import Gestion from "./Gestion";
 import Login from "./Login";
 import MateriaView from "./MateriaView";
-import MateriaCatalogoView from "./MateriaCatalogoView";
+import MateriaCatalogoView from "./Catalogos/MateriaCatalogoView";
 import ProfesorView from "./ProfesorView";
-import ProfesorCatalogoView from "./ProfesorCatalogoView";
-import EdificioCatalogoView from "./EdificioCatalogoView";
-import CatalogosView from "./CatalogosView";
-import AulaCatalogoView from "./AulaCatalogoView";
-import CarreraCatalogoView from "./CarreraCatalogoView";
-import GrupoCatalogoView from "./GrupoCatalogoView";
-import GrupoAulaCatalogoView from "./GrupoAulaCatalogoView";
-import PlanEstudioCatalogoView from "./PlanEstudioCatalogoView";
-import PlanEstudioDetalleCatalogoView from "./PlanEstudioDetalleCatalogoView";
-import PeriodoAcademicoCatalogoView from "./PeriodoAcademicoCatalogoView";
-import CargaAcademicaCatalogoView from "./CargaAcademicaCatalogoView";
-import ComponenteCargaCatalogoView from "./ComponenteCargaCatalogoView";
-import BloqueTiempoCatalogoView from "./BloqueTiempoCatalogoView";
-import PropuestaDisponibilidadCatalogoView from "./PropuestaDisponibilidadCatalogoView";
-import DetalleHorarioCatalogoView from "./DetalleHorarioCatalogoView";
-import SesionClaseCatalogoView from "./SesionClaseCatalogoView";
+import ProfesorCatalogoView from "./Catalogos/ProfesorCatalogoView";
+import EdificioCatalogoView from "./Catalogos/EdificioCatalogoView";
+import CatalogosView from "./Catalogos/CatalogosView";
+import AulaCatalogoView from "./Catalogos/AulaCatalogoView";
+import CarreraCatalogoView from "./Catalogos/CarreraCatalogoView";
+import GrupoCatalogoView from "./Catalogos/GrupoCatalogoView";
+import GrupoAulaCatalogoView from "./Catalogos/GrupoAulaCatalogoView";
+import PlanEstudioCatalogoView from "./Catalogos/PlanEstudioCatalogoView";
+import PlanEstudioDetalleCatalogoView from "./Catalogos/PlanEstudioDetalleCatalogoView";
+import PeriodoAcademicoCatalogoView from "./Catalogos/PeriodoAcademicoCatalogoView";
+import CargaAcademicaCatalogoView from "./Catalogos/CargaAcademicaCatalogoView";
+import ComponenteCargaCatalogoView from "./Catalogos/ComponenteCargaCatalogoView";
+import BloqueTiempoCatalogoView from "./Catalogos/BloqueTiempoCatalogoView";
+import PropuestaDisponibilidadCatalogoView from "./Catalogos/PropuestaDisponibilidadCatalogoView";
+import DetalleHorarioCatalogoView from "./Catalogos/DetalleHorarioCatalogoView";
+import SesionClaseCatalogoView from "./Catalogos/SesionClaseCatalogoView";
 import DisponibilidadView from "./DisponibilidadView";
 import PropuestasCoordinacionView from "./PropuestasCoordinacionView";
 import PropuestaDetalleCoordinacionView from "./PropuestaDetalleCoordinacionView";
@@ -30,6 +30,7 @@ import PreferenciaMateriaProfesorView from "./PreferenciaMateriaProfesorView";
 import GeneradorView from "./GeneradorView";
 import HorarioGeneradoView from "./HorarioGeneradoView";
 import BandejaConflictosView from "./BandejaConflictosView";
+import { DialogProvider } from "./components/AppDialog";
 
 function App() {
   const [sesionIniciada, setSesionIniciada] = useState(false);
@@ -144,9 +145,11 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      {sesionIniciada ? renderizarRutasPorRol() : <Login onLoginSuccess={handleLoginSuccess} />}
-    </BrowserRouter>
+    <DialogProvider>
+      <BrowserRouter>
+        {sesionIniciada ? renderizarRutasPorRol() : <Login onLoginSuccess={handleLoginSuccess} />}
+      </BrowserRouter>
+    </DialogProvider>
   );
 }
 

@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Info, Layers3, Lock } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarPlanEstudioDetalle,
   crearPlanEstudioDetalle,
   eliminarPlanEstudioDetalle,
   listarPlanEstudioDetalle,
-} from "./service/PlanEstudioDetalleService";
-import { obtenerPlanEstudio } from "./service/PlanEstudioService";
-import { listarMaterias } from "./service/MateriaService";
+} from "../service/PlanEstudioDetalleService";
+import { obtenerPlanEstudio } from "../service/PlanEstudioService";
+import { listarMaterias } from "../service/MateriaService";
 
 const tabs = ["Planes de Estudio", "Materias", "Detalles"];
 

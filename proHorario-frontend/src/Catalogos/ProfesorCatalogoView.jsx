@@ -1,10 +1,10 @@
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarProfesor,
   crearProfesor,
   eliminarProfesor,
   obtenerProfesor,
-} from "./service/ProfesorService";
+} from "../service/ProfesorService";
 import { Info, Lock, User } from "lucide-react";
 
 const initialFormState = {

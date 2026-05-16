@@ -1,12 +1,12 @@
 import { BookOpen, Info, Lock } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarMateria,
   crearMateria,
   eliminarMateria,
   listarMaterias,
-} from "./service/MateriaService";
+} from "../service/MateriaService";
 
 const initialFormState = {
   claveMateria: "",

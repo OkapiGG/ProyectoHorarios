@@ -7,7 +7,14 @@ import {
   obtenerPropuestasPorEstado,
   rechazarPropuesta,
 } from "./service/PropuestaDisponibilidadService";
-import { Bell, CheckCircle2, Clock3, Eye, FileText, RotateCcw, Settings } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock3,
+  Eye,
+  FileText,
+  RefreshCw,
+  RotateCcw,
+} from "lucide-react";
 
 const filtrosEstado = ["TODAS", "ENVIADA", "APROBADA", "BORRADOR"];
 
@@ -17,21 +24,27 @@ const ordenEstados = {
   APROBADA: 2,
 };
 
+const ESTILO_ESTADO = {
+  ENVIADA: "bg-amber-100 text-amber-700",
+  APROBADA: "bg-emerald-100 text-emerald-700",
+  BORRADOR: "bg-slate-200 text-slate-600",
+};
+
 function PropuestasCoordinacionView() {
   const navigate = useNavigate();
   const [periodoActivo, setPeriodoActivo] = useState(null);
   const [propuestas, setPropuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [procesandoId, setProcesandoId] = useState(null);
-  const [mensajeAccion, setMensajeAccion] = useState("");
+  const [mensajeAccion, setMensajeAccion] = useState({ tipo: "idle", texto: "" });
   const [estadoSeleccionado, setEstadoSeleccionado] = useState("TODAS");
 
   useEffect(() => {
-    if (!mensajeAccion) {
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => setMensajeAccion(""), 3000);
+    if (!mensajeAccion.texto) return undefined;
+    const timeoutId = window.setTimeout(
+      () => setMensajeAccion({ tipo: "idle", texto: "" }),
+      3500
+    );
     return () => window.clearTimeout(timeoutId);
   }, [mensajeAccion]);
 
@@ -49,24 +62,28 @@ function PropuestasCoordinacionView() {
                 )
               )
             ).flat()
-          : await obtenerPropuestasPorEstado(estadoSeleccionado, periodo.idPeriodoAcademico);
+          : await obtenerPropuestasPorEstado(
+              estadoSeleccionado,
+              periodo.idPeriodoAcademico
+            );
 
       setPeriodoActivo(periodo);
       setPropuestas(
         [...propuestasFiltradas].sort((a, b) => {
           const ordenA = ordenEstados[a.estado] ?? 99;
           const ordenB = ordenEstados[b.estado] ?? 99;
-
-          if (ordenA !== ordenB) {
-            return ordenA - ordenB;
-          }
-
-          return String(a.nombreProfesor ?? "").localeCompare(String(b.nombreProfesor ?? ""));
+          if (ordenA !== ordenB) return ordenA - ordenB;
+          return String(a.nombreProfesor ?? "").localeCompare(
+            String(b.nombreProfesor ?? "")
+          );
         })
       );
     } catch (error) {
       console.error("Error al cargar propuestas", error);
-      setMensajeAccion("No se pudieron cargar las propuestas.");
+      setMensajeAccion({
+        tipo: "error",
+        texto: "No se pudieron cargar las propuestas.",
+      });
     } finally {
       setCargando(false);
     }
@@ -77,52 +94,67 @@ function PropuestasCoordinacionView() {
   }, [estadoSeleccionado]);
 
   const resumen = useMemo(() => {
-    const total = propuestas.length;
+    const enviadas = propuestas.filter((p) => p.estado === "ENVIADA").length;
+    const aprobadas = propuestas.filter((p) => p.estado === "APROBADA").length;
+    const borradores = propuestas.filter((p) => p.estado === "BORRADOR").length;
     const entregadasHoy = propuestas.filter((propuesta) => {
       if (!propuesta.fechaEntrega) return false;
       return propuesta.fechaEntrega === new Date().toISOString().slice(0, 10);
     }).length;
-
-    return { total, entregadasHoy };
+    return {
+      enviadas,
+      aprobadas,
+      borradores,
+      entregadasHoy,
+      total: propuestas.length,
+    };
   }, [propuestas]);
 
   const handleAprobar = async (idProDisponibilidad) => {
-    if (procesandoId) {
-      return;
-    }
-
+    if (procesandoId) return;
     setProcesandoId(idProDisponibilidad);
-
     try {
       await aprobarPropuesta(idProDisponibilidad);
       setPropuestas((actuales) =>
-        actuales.filter((propuesta) => propuesta.idProDisponibilidad !== idProDisponibilidad)
+        actuales.filter(
+          (propuesta) => propuesta.idProDisponibilidad !== idProDisponibilidad
+        )
       );
-      setMensajeAccion("La propuesta fue aprobada correctamente.");
+      setMensajeAccion({
+        tipo: "success",
+        texto: "Propuesta aprobada correctamente.",
+      });
     } catch (error) {
       console.error("Error al aprobar propuesta", error);
-      setMensajeAccion("No se pudo aprobar la propuesta.");
+      setMensajeAccion({
+        tipo: "error",
+        texto: "No se pudo aprobar la propuesta.",
+      });
     } finally {
       setProcesandoId(null);
     }
   };
 
   const handleRechazar = async (idProDisponibilidad) => {
-    if (procesandoId) {
-      return;
-    }
-
+    if (procesandoId) return;
     setProcesandoId(idProDisponibilidad);
-
     try {
       await rechazarPropuesta(idProDisponibilidad);
       setPropuestas((actuales) =>
-        actuales.filter((propuesta) => propuesta.idProDisponibilidad !== idProDisponibilidad)
+        actuales.filter(
+          (propuesta) => propuesta.idProDisponibilidad !== idProDisponibilidad
+        )
       );
-      setMensajeAccion("La propuesta fue devuelta a borrador.");
+      setMensajeAccion({
+        tipo: "success",
+        texto: "Propuesta devuelta a borrador.",
+      });
     } catch (error) {
       console.error("Error al rechazar propuesta", error);
-      setMensajeAccion("No se pudo devolver la propuesta a borrador.");
+      setMensajeAccion({
+        tipo: "error",
+        texto: "No se pudo devolver la propuesta a borrador.",
+      });
     } finally {
       setProcesandoId(null);
     }
@@ -131,197 +163,246 @@ function PropuestasCoordinacionView() {
   return (
     <div className="flex h-screen overflow-hidden bg-[#f4f7fb] font-sans">
       <Sidebar />
-      <main className="min-w-0 flex-1 overflow-hidden p-3">
-        <div className="flex h-full flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_26px_70px_rgba(15,23,42,0.08)]">
-          <header className="flex shrink-0 flex-col gap-3 border-b border-slate-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 flex-col">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#9a6b00]">
-                Coordinación Académica
-              </p>
-              <h1 className="mt-1 truncate text-[clamp(1.35rem,1.7vw,2rem)] font-black tracking-[-0.04em] text-slate-900">
-                Propuestas de disponibilidad recibidas
+
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-3">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          {/* Header compacto */}
+          <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+            <div className="min-w-0">
+              <h1 className="truncate text-lg font-extrabold tracking-tight text-slate-900">
+                Propuestas de disponibilidad
               </h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Lista completa de propuestas enviadas por el profesorado para el periodo activo.
+              <p className="text-xs text-slate-500">
+                Revisa, aprueba o devuelve a borrador las propuestas del periodo.
               </p>
             </div>
-            <div className="flex items-center gap-3 text-slate-500">
-              <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[#12356b]">
+
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
                 {periodoActivo?.descripcion ?? "Sin periodo activo"}
-              </div>
-              <button className="text-slate-400 hover:text-slate-600"><Bell size={18} /></button>
-              <button className="text-slate-400 hover:text-slate-600"><Settings size={18} /></button>
+              </span>
+              <button
+                type="button"
+                onClick={cargarPropuestas}
+                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                title="Recargar"
+              >
+                <RefreshCw size={16} className={cargando ? "animate-spin" : ""} />
+              </button>
             </div>
           </header>
 
-          <div className="grid gap-4 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-            <section className="min-w-0">
-              {mensajeAccion && (
-                <div className="mb-4 rounded-[18px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
-                  {mensajeAccion}
-                </div>
-              )}
+          {/* Mensaje flotante */}
+          {mensajeAccion.texto ? (
+            <div
+              className={`mx-5 mt-3 shrink-0 rounded-lg border px-4 py-2.5 text-sm font-semibold ${
+                mensajeAccion.tipo === "error"
+                  ? "border-red-100 bg-red-50 text-red-700"
+                  : mensajeAccion.tipo === "success"
+                    ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                    : "border-slate-200 bg-slate-50 text-slate-700"
+              }`}
+            >
+              {mensajeAccion.texto}
+            </div>
+          ) : null}
 
-              <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-                <div className="border-b border-slate-100 px-5 py-4">
-                  <h2 className="text-lg font-extrabold text-slate-900">Listado de propuestas</h2>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Consulta todas las propuestas del periodo activo o filtra por estado.
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {filtrosEstado.map((estado) => (
-                      <button
-                        key={estado}
-                        type="button"
-                        onClick={() => setEstadoSeleccionado(estado)}
-                        className={`rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] transition-all ${
-                          estadoSeleccionado === estado
-                            ? "bg-[#12356b] text-white"
-                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                        }`}
+          {/* Stat cards */}
+          <div className="grid shrink-0 grid-cols-2 gap-2 px-5 py-3 sm:grid-cols-4">
+            <div className="rounded-lg border border-amber-100 bg-amber-50/70 px-3 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+                Pendientes
+              </p>
+              <p className="mt-0.5 text-xl font-black text-amber-700">
+                {resumen.enviadas}
+              </p>
+            </div>
+            <div className="rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                Aprobadas
+              </p>
+              <p className="mt-0.5 text-xl font-black text-emerald-700">
+                {resumen.aprobadas}
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Borradores
+              </p>
+              <p className="mt-0.5 text-xl font-black text-slate-700">
+                {resumen.borradores}
+              </p>
+            </div>
+            <div className="rounded-lg border border-blue-100 bg-blue-50/70 px-3 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">
+                Entregadas hoy
+              </p>
+              <p className="mt-0.5 text-xl font-black text-blue-700">
+                {resumen.entregadasHoy}
+              </p>
+            </div>
+          </div>
+
+          {/* Filtros */}
+          <div className="flex shrink-0 flex-wrap items-center gap-1.5 border-y border-slate-100 bg-slate-50/50 px-5 py-2.5">
+            <span className="mr-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Filtrar
+            </span>
+            {filtrosEstado.map((estado) => (
+              <button
+                key={estado}
+                type="button"
+                onClick={() => setEstadoSeleccionado(estado)}
+                className={`rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
+                  estadoSeleccionado === estado
+                    ? "bg-[#12356b] text-white shadow-sm"
+                    : "text-slate-500 hover:bg-slate-200/70 hover:text-slate-900"
+                }`}
+              >
+                {estado}
+              </button>
+            ))}
+          </div>
+
+          {/* Tabla con scroll */}
+          <div className="min-h-0 flex-1 overflow-auto">
+            <table className="w-full min-w-max border-collapse">
+              <thead className="sticky top-0 z-10 bg-white">
+                <tr className="border-b border-slate-100 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  <th className="px-5 py-3">Profesor</th>
+                  <th className="px-5 py-3">Área</th>
+                  <th className="px-5 py-3">Periodo</th>
+                  <th className="px-5 py-3">Entrega</th>
+                  <th className="px-5 py-3">Estado</th>
+                  <th className="px-5 py-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {cargando ? (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="px-5 py-10 text-center text-sm font-semibold text-slate-500"
+                    >
+                      Cargando propuestas...
+                    </td>
+                  </tr>
+                ) : propuestas.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="px-5 py-10 text-center text-sm font-semibold text-slate-500"
+                    >
+                      No hay propuestas en estado {estadoSeleccionado} para el
+                      periodo activo.
+                    </td>
+                  </tr>
+                ) : (
+                  propuestas.map((propuesta) => {
+                    const estaProcesando =
+                      procesandoId === propuesta.idProDisponibilidad;
+                    const puedeAccion = propuesta.estado === "ENVIADA";
+                    const colorEstado =
+                      ESTILO_ESTADO[propuesta.estado] ??
+                      "bg-slate-200 text-slate-600";
+
+                    return (
+                      <tr
+                        key={propuesta.idProDisponibilidad}
+                        className="align-middle transition-colors hover:bg-slate-50/60"
                       >
-                        {estado}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-slate-100">
-                    <thead className="bg-slate-50">
-                      <tr className="text-left text-xs font-extrabold uppercase tracking-[0.14em] text-slate-500">
-                        <th className="px-5 py-4">Profesor</th>
-                        <th className="px-5 py-4">Área</th>
-                        <th className="px-5 py-4">Periodo</th>
-                        <th className="px-5 py-4">Entrega</th>
-                        <th className="px-5 py-4">Estado</th>
-                        <th className="px-5 py-4 text-right">Acciones</th>
+                        <td className="px-5 py-3">
+                          <p className="text-sm font-bold text-slate-900">
+                            {propuesta.nombreProfesor}
+                          </p>
+                          <p className="text-[11px] text-slate-400">
+                            PROF-{propuesta.idProfesor}
+                          </p>
+                        </td>
+                        <td className="px-5 py-3 text-sm text-slate-600">
+                          {propuesta.areaConocimiento || (
+                            <span className="italic text-slate-400">Sin área</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3 text-sm text-slate-600">
+                          {propuesta.descripcionPeriodo}
+                        </td>
+                        <td className="px-5 py-3 text-sm text-slate-600">
+                          {propuesta.fechaEntrega || (
+                            <span className="italic text-slate-400">
+                              Sin fecha
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3">
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${colorEstado}`}
+                          >
+                            {propuesta.estado}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3">
+                          <div className="flex justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                navigate(
+                                  `/propuestas/${propuesta.idProDisponibilidad}`
+                                )
+                              }
+                              className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-all hover:border-slate-300 hover:bg-slate-50"
+                              title="Revisar detalle"
+                            >
+                              <Eye size={13} />
+                              Revisar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRechazar(propuesta.idProDisponibilidad)
+                              }
+                              disabled={estaProcesando || !puedeAccion}
+                              className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-all hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:bg-white disabled:hover:text-slate-600"
+                              title="Devolver a borrador"
+                            >
+                              <RotateCcw size={13} />
+                              Regresar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleAprobar(propuesta.idProDisponibilidad)
+                              }
+                              disabled={estaProcesando || !puedeAccion}
+                              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold text-white transition-all ${
+                                estaProcesando || !puedeAccion
+                                  ? "cursor-not-allowed bg-emerald-300"
+                                  : "bg-emerald-600 hover:bg-emerald-700"
+                              }`}
+                              title="Aprobar propuesta"
+                            >
+                              <CheckCircle2 size={13} />
+                              Aprobar
+                            </button>
+                          </div>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {cargando ? (
-                        <tr>
-                          <td colSpan="6" className="px-5 py-10 text-center text-sm font-semibold text-slate-500">
-                            Cargando propuestas...
-                          </td>
-                        </tr>
-                      ) : propuestas.length === 0 ? (
-                        <tr>
-                          <td colSpan="6" className="px-5 py-10 text-center text-sm font-semibold text-slate-500">
-                            No hay propuestas en estado {estadoSeleccionado} para el periodo activo.
-                          </td>
-                        </tr>
-                      ) : (
-                        propuestas.map((propuesta) => {
-                          const estaProcesando = procesandoId === propuesta.idProDisponibilidad;
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
 
-                          return (
-                            <tr key={propuesta.idProDisponibilidad} className="align-middle">
-                              <td className="px-5 py-4">
-                                <div>
-                                  <p className="font-bold text-slate-900">{propuesta.nombreProfesor}</p>
-                                  <p className="text-sm text-slate-500">ID PROF-{propuesta.idProfesor}</p>
-                                </div>
-                              </td>
-                              <td className="px-5 py-4 text-sm font-medium text-slate-600">
-                                {propuesta.areaConocimiento || "Sin área registrada"}
-                              </td>
-                              <td className="px-5 py-4 text-sm font-medium text-slate-600">
-                                {propuesta.descripcionPeriodo}
-                              </td>
-                              <td className="px-5 py-4 text-sm font-medium text-slate-600">
-                                {propuesta.fechaEntrega || "Sin fecha"}
-                              </td>
-                              <td className="px-5 py-4">
-                                <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-amber-700">
-                                  {propuesta.estado}
-                                </span>
-                              </td>
-                              <td className="px-5 py-4">
-                                <div className="flex justify-end gap-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => navigate(`/propuestas/${propuesta.idProDisponibilidad}`)}
-                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50"
-                                  >
-                                    <span className="inline-flex items-center gap-2">
-                                      <Eye size={14} />
-                                      Revisar
-                                    </span>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRechazar(propuesta.idProDisponibilidad)}
-                                    disabled={estaProcesando || propuesta.estado !== "ENVIADA"}
-                                    className={`rounded-xl border px-4 py-2 text-sm font-bold transition-all ${
-                                      estaProcesando || estadoSeleccionado !== "ENVIADA"
-                                        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
-                                        : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-                                    }`}
-                                  >
-                                    <span className="inline-flex items-center gap-2">
-                                      <RotateCcw size={14} />
-                                      Regresar
-                                    </span>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleAprobar(propuesta.idProDisponibilidad)}
-                                    disabled={estaProcesando || propuesta.estado !== "ENVIADA"}
-                                    className={`rounded-xl px-4 py-2 text-sm font-bold text-white transition-all ${
-                                      estaProcesando || estadoSeleccionado !== "ENVIADA"
-                                        ? "cursor-not-allowed bg-emerald-300"
-                                        : "bg-emerald-600 hover:bg-emerald-700"
-                                    }`}
-                                  >
-                                    <span className="inline-flex items-center gap-2">
-                                      <CheckCircle2 size={14} />
-                                      Aprobar
-                                    </span>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </section>
-
-            <aside className="flex flex-col gap-4">
-              <section className="rounded-[24px] border border-slate-100 bg-white p-5 shadow-[inset_4px_0_0_0_#12356b,0_16px_36px_rgba(15,23,42,0.07)]">
-                <h3 className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#9a6b00]">
-                  Resumen
-                </h3>
-                <div className="mt-4 space-y-3">
-                  <div className="rounded-[18px] bg-[#f8fafc] px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
-                        <Clock3 size={16} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-800">Pendientes</p>
-                        <p className="text-[1.7rem] font-black text-[#0f2f63]">{String(resumen.total).padStart(2, "0")}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="rounded-[18px] bg-[#f8fafc] px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-                        <FileText size={16} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-800">Entregadas hoy</p>
-                        <p className="text-[1.7rem] font-black text-[#0f2f63]">{String(resumen.entregadasHoy).padStart(2, "0")}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </aside>
+          {/* Footer */}
+          <div className="flex shrink-0 items-center justify-between border-t border-slate-100 px-5 py-2 text-xs text-slate-500">
+            <span>
+              {propuestas.length} {propuestas.length === 1 ? "propuesta" : "propuestas"}
+              {estadoSeleccionado !== "TODAS" ? ` · estado ${estadoSeleccionado}` : ""}
+            </span>
+            <span className="hidden text-slate-400 sm:inline">
+              Las acciones solo aplican a propuestas en estado ENVIADA
+            </span>
           </div>
         </div>
       </main>

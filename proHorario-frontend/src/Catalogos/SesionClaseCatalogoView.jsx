@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { DoorOpen, Edit2, Info, Lock, Trash2, Users } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
-import { crearSesionClase, obtenerSesionClase } from "./service/SesionClaseService";
-import { obtenerComponentesCarga } from "./service/ComponenteCargaService";
-import { obtenerBloqueTiempo } from "./service/BloqueTiempoService";
-import { obtenerAulas } from "./service/AulaService";
-import { obtenerCargasAcademicas } from "./service/CargaAcademicaService";
+import { createCatalogCrudPage } from "../components/Catalogo";
+import { crearSesionClase, obtenerSesionClase } from "../service/SesionClaseService";
+import { obtenerComponentesCarga } from "../service/ComponenteCargaService";
+import { obtenerBloqueTiempo } from "../service/BloqueTiempoService";
+import { obtenerAulas } from "../service/AulaService";
+import { obtenerCargasAcademicas } from "../service/CargaAcademicaService";
 
 const estados = ["PROGRAMADA", "CONFLICTO", "RESUELTA", "CANCELADA"];
 

@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { CalendarRange, Info, Lock, Users } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarCargaAcademica,
   crearCargaAcademica,
   eliminarCargaAcademica,
   obtenerCargasAcademicas,
-} from "./service/CargaAcademicaService";
-import { listarPlanEstudioDetalle } from "./service/PlanEstudioDetalleService";
-import { obtenerGrupos } from "./service/GrupoService";
-import { obtenerProfesor } from "./service/ProfesorService";
-import { obtenerPeriodoAcademico } from "./service/PeriodoAcademicoService";
+} from "../service/CargaAcademicaService";
+import { listarPlanEstudioDetalle } from "../service/PlanEstudioDetalleService";
+import { obtenerGrupos } from "../service/GrupoService";
+import { obtenerProfesor } from "../service/ProfesorService";
+import { obtenerPeriodoAcademico } from "../service/PeriodoAcademicoService";
 
 function useCargaAcademicaConfig() {
   const [planDetalles, setPlanDetalles] = useState([]);

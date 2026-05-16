@@ -1,10 +1,10 @@
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarCarrera,
   crearCarrera,
   eliminarCarrera,
   obtenerCarreras,
-} from "./service/CarreraService";
+} from "../service/CarreraService";
 import { Building2, Info, Lock } from "lucide-react";
 
 const initialFormState = {

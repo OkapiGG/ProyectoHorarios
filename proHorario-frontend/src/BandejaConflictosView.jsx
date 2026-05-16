@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar";
+import { useAppDialog } from "./components/AppDialog";
 import {
   AlertOctagon,
   ArrowRightLeft,
@@ -18,7 +19,12 @@ import {
   obtenerConflictosPendientes,
   obtenerSugerencias,
 } from "./service/ConflictoService";
-import { playCrashSound, playSuccessSound, playWarningSound } from "./utils/soundEffects";
+import {
+  playCrashSound,
+  playSuccessSound,
+  playWarningSound,
+  primeAudio,
+} from "./utils/soundEffects";
 
 function obtenerMensajeError(error, fallback) {
   const data = error?.response?.data;
@@ -159,6 +165,7 @@ function BandejaConflictosView() {
   const [cargandoSugerencias, setCargandoSugerencias] = useState(false);
   const [aplicandoId, setAplicandoId] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: "idle", texto: "" });
+  const dialog = useAppDialog();
 
   const cargarBandeja = useCallback(async ({ preserveMessage = false } = {}) => {
     setCargandoBandeja(true);
@@ -221,6 +228,8 @@ function BandejaConflictosView() {
 
   const handleAplicar = async (sugerencia) => {
     if (!seleccionado) return;
+    primeAudio();
+
     const keyAplicacion = `${seleccionado.idConflicto}-${sugerencias.indexOf(sugerencia)}`;
     setAplicandoId(keyAplicacion);
     setMensaje({ tipo: "idle", texto: "" });
@@ -230,7 +239,7 @@ function BandejaConflictosView() {
         tipo: "success",
         texto: `Conflicto resuelto · ${resultado.sesionesCreadas} sesión(es) creada(s), ${resultado.sesionesEliminadas} movida(s).`,
       });
-      playSuccessSound();
+      await playSuccessSound();
       await cargarBandeja({ preserveMessage: true });
     } catch (error) {
       console.error("Fallo al aplicar sugerencia", error);
@@ -242,14 +251,14 @@ function BandejaConflictosView() {
             obtenerMensajeError(error, "La sugerencia ya no es viable.") +
             " Recargando sugerencias actualizadas.",
         });
-        playWarningSound();
+        await playWarningSound();
         await cargarSugerencias(seleccionado.idConflicto);
       } else {
         setMensaje({
           tipo: "error",
           texto: obtenerMensajeError(error, "No se pudo aplicar la sugerencia."),
         });
-        playCrashSound();
+        await playCrashSound();
       }
     } finally {
       setAplicandoId(null);
@@ -258,13 +267,20 @@ function BandejaConflictosView() {
 
   const handleDescartar = async () => {
     if (!seleccionado) return;
-    const motivo = window.prompt("Motivo para descartar este conflicto (opcional):", "");
+    primeAudio();
+
+    const motivo = await dialog.prompt({
+      title: "Descartar conflicto",
+      message: "Motivo para descartar este conflicto (opcional):",
+      placeholder: "Escribe un motivo para auditoría...",
+      confirmLabel: "Descartar",
+    });
     if (motivo === null) return;
     setMensaje({ tipo: "idle", texto: "" });
     try {
       await descartarConflicto(seleccionado.idConflicto, motivo);
       setMensaje({ tipo: "success", texto: "Conflicto descartado." });
-      playCrashSound();
+      await playCrashSound();
       await cargarBandeja({ preserveMessage: true });
     } catch (error) {
       console.error("No se pudo descartar el conflicto", error);
@@ -272,7 +288,7 @@ function BandejaConflictosView() {
         tipo: "error",
         texto: obtenerMensajeError(error, "No se pudo descartar el conflicto."),
       });
-      playCrashSound();
+      await playCrashSound();
     }
   };
 

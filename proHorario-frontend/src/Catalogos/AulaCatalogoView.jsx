@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { DoorOpen, Info, Lock } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarAula,
   crearAula,
   eliminarAula,
   obtenerAulas,
-} from "./service/AulaService";
-import { obtenerEdificios } from "./service/EdificioService";
+} from "../service/AulaService";
+import { obtenerEdificios } from "../service/EdificioService";
 
 const tabs = ["Materias", "Profesores", "Carreras", "Aulas", "Edificios"];
 

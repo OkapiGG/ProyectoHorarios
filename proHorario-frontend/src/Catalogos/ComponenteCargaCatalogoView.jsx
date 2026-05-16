@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Building2, Info, Layers3, Lock } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarComponenteCarga,
   crearComponenteCarga,
   eliminarComponenteCarga,
   obtenerComponentesCarga,
-} from "./service/ComponenteCargaService";
-import { obtenerCargasAcademicas } from "./service/CargaAcademicaService";
+} from "../service/ComponenteCargaService";
+import { obtenerCargasAcademicas } from "../service/CargaAcademicaService";
 
 const tipoSesionOptions = ["TEORIA", "LABORATORIO", "TALLER"];
 

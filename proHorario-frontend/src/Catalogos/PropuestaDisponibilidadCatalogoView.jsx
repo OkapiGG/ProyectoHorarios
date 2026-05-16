@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { CalendarDays, Edit2, Info, Lock, Trash2, Users } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
+import { createCatalogCrudPage } from "../components/Catalogo";
 import {
   crearPropuestaDisponibilidad,
   obtenerPropuestaDisponibilidad,
-} from "./service/PropuestaDisponibilidadService";
-import { obtenerProfesor } from "./service/ProfesorService";
-import { obtenerPeriodoAcademico } from "./service/PeriodoAcademicoService";
+} from "../service/PropuestaDisponibilidadService";
+import { obtenerProfesor } from "../service/ProfesorService";
+import { obtenerPeriodoAcademico } from "../service/PeriodoAcademicoService";
 
 const estados = ["BORRADOR", "ENVIADA", "APROBADA"];
 

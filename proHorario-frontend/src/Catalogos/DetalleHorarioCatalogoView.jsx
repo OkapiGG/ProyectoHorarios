@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { LayoutGrid, Edit2, Info, Lock, Trash2 } from "lucide-react";
 
-import { createCatalogCrudPage } from "./components/Catalogo";
+import { createCatalogCrudPage } from "../components/Catalogo";
 import {
   crearDetalleHorario,
   obtenerDetalleHorario,
-} from "./service/DetalleHorarioService";
-import { obtenerPropuestaDisponibilidad } from "./service/PropuestaDisponibilidadService";
-import { obtenerBloqueTiempo } from "./service/BloqueTiempoService";
+} from "../service/DetalleHorarioService";
+import { obtenerPropuestaDisponibilidad } from "../service/PropuestaDisponibilidadService";
+import { obtenerBloqueTiempo } from "../service/BloqueTiempoService";
 
 const tiposBloque = ["PREFERIDO", "PROHIBIDO"];
 

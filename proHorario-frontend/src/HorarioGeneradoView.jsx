@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
+import { useAppDialog } from "./components/AppDialog";
 import { obtenerPeriodoActivo } from "./service/PeriodoAcademicoService";
 import { obtenerHorarioGeneradoPorPeriodo } from "./service/HorarioGeneradoService";
 import { obtenerGrupoAulaPorPeriodo } from "./service/GrupoAulaService";
@@ -31,8 +32,10 @@ const DIAS = [
   { key: "VIERNES", short: "Vie" },
 ];
 
-const HORAS_MATUTINO = Array.from({ length: 7 }, (_, index) => 7 + index);
-const HORAS_VESPERTINO = Array.from({ length: 6 }, (_, index) => 15 + index);
+// Matutino: 07:00 - 14:00 (incluye etiqueta 14:00 al final)
+const HORAS_MATUTINO = Array.from({ length: 8 }, (_, index) => 7 + index);
+// Vespertino: 15:00 - 21:00 (incluye etiqueta 21:00 al final)
+const HORAS_VESPERTINO = Array.from({ length: 7 }, (_, index) => 15 + index);
 const PALETA_TARJETAS = ["azul", "violeta", "verde", "amarillo"];
 
 const ESTILOS_TARJETA = {
@@ -737,6 +740,7 @@ function HorarioGeneradoView() {
   const [dropTargetCelda, setDropTargetCelda] = useState(null);
   const [mensajeEdicion, setMensajeEdicion] = useState({ tipo: "idle", texto: "" });
   const [aplicandoCambio, setAplicandoCambio] = useState(false);
+  const dialog = useAppDialog();
 
   useEffect(() => {
     let activa = true;
@@ -887,9 +891,12 @@ function HorarioGeneradoView() {
 
   const handleEliminarSesion = useCallback(
     async (sesion) => {
-      const confirmacion = window.confirm(
-        `¿Eliminar la sesión de "${sesion.materia}" del ${sesion.dia} ${String(sesion.horaInicio).padStart(2, "0")}:00?`
-      );
+      const confirmacion = await dialog.confirm({
+        variant: "danger",
+        title: "Eliminar sesión",
+        message: `¿Eliminar la sesión de "${sesion.materia}" del ${sesion.dia} ${String(sesion.horaInicio).padStart(2, "0")}:00?`,
+        confirmLabel: "Eliminar",
+      });
       if (!confirmacion) return;
 
       setAplicandoCambio(true);
@@ -909,7 +916,7 @@ function HorarioGeneradoView() {
         setAplicandoCambio(false);
       }
     },
-    [recargarSesiones]
+    [dialog, recargarSesiones]
   );
 
   // ---------------------------------------------------------------

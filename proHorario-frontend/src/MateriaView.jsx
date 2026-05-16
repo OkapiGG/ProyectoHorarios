@@ -1,4 +1,4 @@
-import MateriaCatalogoView from "./MateriaCatalogoView";
+import MateriaCatalogoView from "./Catalogos/MateriaCatalogoView";
 
 function MateriaView() {
   return <MateriaCatalogoView />;

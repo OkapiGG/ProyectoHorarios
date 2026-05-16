@@ -1,10 +1,10 @@
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarEdificio,
   crearEdificio,
   eliminarEdificio,
   obtenerEdificios,
-} from "./service/EdificioService";
+} from "../service/EdificioService";
 import { Building2, Info, Lock } from "lucide-react";
 
 const initialFormState = {

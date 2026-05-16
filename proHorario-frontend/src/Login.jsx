@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { GraduationCap, Mail, Lock, LogIn, Search, Settings } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "./auth/AuthContext";
-import { playCrashSound, playLoginSound } from "./utils/soundEffects";
+import {
+  playCrashSound,
+  playLoginSound,
+  primeAudio,
+} from "./utils/soundEffects";
+import { useAppDialog } from "./components/AppDialog";
 
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
@@ -12,9 +17,14 @@ function Login({ onLoginSuccess }) {
   const [rolSeleccionado, setRolSeleccionado] = useState("PROFESOR");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
+  const dialog = useAppDialog();
 
   const clickBoton = async (e) => {
     e.preventDefault();
+    // CRÍTICO: destrabar AudioContext SÍNCRONAMENTE bajo el user gesture
+    // actual, antes de cualquier await. Después del axios.post, el token
+    // de user activation expira y resume() falla silenciosamente.
+    primeAudio();
     setIsSubmitting(true);
 
     try {
@@ -24,25 +34,45 @@ function Login({ onLoginSuccess }) {
       });
 
       if (respuesta.data.rol !== rolSeleccionado) {
-        alert(
-          `Tu usuario está registrado como ${respuesta.data.rol}, pero seleccionaste ${rolSeleccionado}.`
-        );
+        await dialog.alert({
+          variant: "warning",
+          title: "Rol no coincide",
+          message: `Tu usuario está registrado como ${respuesta.data.rol}, pero seleccionaste ${rolSeleccionado}.`,
+        });
         return;
       }
+
+      // Dispara el sonido ANTES de navegar/alert: los osciladores quedan
+      // calendarizados en el AudioContext y suenan aunque el componente
+      // se desmonte por la navegación.
+      await playLoginSound();
 
       login(respuesta.data, correo);
       localStorage.setItem("usuarioActual", JSON.stringify(respuesta.data));
       onLoginSuccess?.(respuesta.data);
+      await dialog.alert({
+        variant: "success",
+        title: "Inicio de sesión correcto",
+        message: "Bienvenido " + (respuesta.data.rol ?? "usuario"),
+      });
       navigate("/", { replace: true });
-      playLoginSound();
-      alert("Bienvenido " + (respuesta.data.rol ?? "usuario"));
     } catch (error) {
       console.error("Error al iniciar sesion ", error);
-      playCrashSound();
+      // Sonido primero, alert después: el alert bloquea el thread pero
+      // los osciladores ya quedaron calendarizados en el audio thread.
+      await playCrashSound();
       if (error.response && error.response.status === 401) {
-        alert("Correo o contraseña incorrecto");
+        await dialog.alert({
+          variant: "danger",
+          title: "Credenciales incorrectas",
+          message: "Correo o contraseña incorrecto",
+        });
       } else {
-        alert("Error de conexion");
+        await dialog.alert({
+          variant: "danger",
+          title: "Error de conexión",
+          message: "No se pudo conectar con el servidor.",
+        });
       }
     } finally {
       setIsSubmitting(false);

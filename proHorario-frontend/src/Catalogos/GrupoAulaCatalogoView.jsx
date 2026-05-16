@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { Building2, DoorOpen, Info, Lock, Users } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
-import { obtenerGrupos } from "./service/GrupoService";
-import { obtenerAulas } from "./service/AulaService";
-import { obtenerPeriodoAcademico } from "./service/PeriodoAcademicoService";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
+import { obtenerGrupos } from "../service/GrupoService";
+import { obtenerAulas } from "../service/AulaService";
+import { obtenerPeriodoAcademico } from "../service/PeriodoAcademicoService";
 import {
   actualizarGrupoAula,
   crearGrupoAula,
   eliminarGrupoAula,
   obtenerGrupoAula,
-} from "./service/GrupoAulaService";
+} from "../service/GrupoAulaService";
 
 const formatearGrupo = (grupo) => {
   if (!grupo) {

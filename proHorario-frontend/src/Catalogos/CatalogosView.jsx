@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,

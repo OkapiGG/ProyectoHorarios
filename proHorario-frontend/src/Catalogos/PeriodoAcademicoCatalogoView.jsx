@@ -1,12 +1,12 @@
 import { CalendarRange, Info, Lock } from "lucide-react";
 
-import { AccionesFila, createCatalogCrudPage } from "./components/Catalogo";
+import { AccionesFila, createCatalogCrudPage } from "../components/Catalogo";
 import {
   actualizarPeriodoAcademico,
   crearPeriodoAcademico,
   eliminarPeriodoAcademico,
   obtenerPeriodoAcademico,
-} from "./service/PeriodoAcademicoService";
+} from "../service/PeriodoAcademicoService";
 
 const tabs = ["Periodos Académicos"];
 
